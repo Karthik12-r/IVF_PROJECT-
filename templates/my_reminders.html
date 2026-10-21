@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}My Medication Reminders - IVF Journey Tracker{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/wellness.style.css') }}">
+<style>
+    .reminder-card {
+        transition: transform 0.2s;
+    }
+    .reminder-card:hover {
+        transform: translateY(-2px);
+    }
+    .reminder-time {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+    .reminder-active {
+        border-left: 4px solid #198754;
+    }
+    .reminder-inactive {
+        border-left: 4px solid #6c757d;
+        opacity: 0.7;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header bg-gradient-warning text-dark rounded p-4">
+                <h1 class="mb-2">
+                    <i class="fas fa-bell me-3"></i>My Medication Reminders
+                </h1>
+                <p class="mb-0 opacity-90">
+                    Track and manage your IVF medication schedule
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Add Reminder Form -->
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Add New Reminder
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Medication Name *</label>
+                            <input type="text" class="form-control" name="medication_name" placeholder="e.g., Gonal-f" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Dosage</label>
+                            <input type="text" class="form-control" name="dosage" placeholder="e.g., 150 IU">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Frequency</label>
+                            <select class="form-select" name="frequency">
+                                <option value="Daily">Daily</option>
+                                <option value="Twice Daily">Twice Daily</option>
+                                <option value="Every Other Day">Every Other Day</option>
+                                <option value="Weekly">Weekly</option>
+                                <option value="As Needed">As Needed</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Time of Day</label>
+                            <input type="time" class="form-control" name="time_of_day">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Start Date *</label>
+                            <input type="date" class="form-control" name="start_date" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">End Date</label>
+                            <input type="date" class="form-control" name="end_date">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="fas fa-plus me-2"></i>Add Reminder
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reminders List -->
+        <div class="col-lg-8">
+            <!-- Active Reminders -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-check-circle me-2"></i>Active Reminders
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if active_reminders %}
+                        <div class="row">
+                            {% for reminder in active_reminders %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card reminder-card reminder-active">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h5 class="card-title">{{ reminder.medication_name }}</h5>
+                                                {% if reminder.dosage %}
+                                                <p class="text-muted mb-1">{{ reminder.dosage }}</p>
+                                                {% endif %}
+                                                <p class="mb-1">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    {% if reminder.time_of_day %}
+                                                        {{ reminder.time_of_day.strftime('%I:%M %p') }}
+                                                    {% else %}
+                                                        No specific time
+                                                    {% endif %}
+                                                </p>
+                                                <p class="mb-0">
+                                                    <span class="badge bg-info">{{ reminder.frequency }}</span>
+                                                </p>
+                                            </div>
+                                            <div class="btn-group-vertical">
+                                                <form method="POST" action="{{ url_for('toggle_reminder', reminder_id=reminder.id) }}" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-outline-secondary" title="Deactivate">
+                                                        <i class="fas fa-pause"></i>
+                                                    </button>
+                                                </form>
+                                                <form method="POST" action="{{ url_for('delete_reminder', reminder_id=reminder.id) }}" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this reminder?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">Started: {{ reminder.start_date.strftime('%b %d, %Y') }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-bell-slash fa-3x mb-3"></i>
+                            <h5>No active reminders</h5>
+                            <p>Add your first medication reminder to get started!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Inactive Reminders -->
+            {% if inactive_reminders %}
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-pause-circle me-2"></i>Inactive Reminders
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for reminder in inactive_reminders %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card reminder-card reminder-inactive">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="card-title">{{ reminder.medication_name }}</h5>
+                                            {% if reminder.dosage %}
+                                            <p class="text-muted mb-1">{{ reminder.dosage }}</p>
+                                            {% endif %}
+                                            <p class="mb-0">
+                                                <span class="badge bg-secondary">{{ reminder.frequency }}</span>
+                                            </p>
+                                        </div>
+                                        <div class="btn-group-vertical">
+                                            <form method="POST" action="{{ url_for('toggle_reminder', reminder_id=reminder.id) }}" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-outline-success" title="Activate">
+                                                    <i class="fas fa-play"></i>
+                                                </button>
+                                            </form>
+                                            <form method="POST" action="{{ url_for('delete_reminder', reminder_id=reminder.id) }}" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this reminder?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

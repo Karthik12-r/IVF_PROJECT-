@@ -1,0 +1,11 @@
+Check,Records Checked,Issues Found,Status
+Missing Values,5000,0,PASS
+Data Types,45000,0,PASS
+Duplicate Rows,5000,0,PASS
+Range Rules,5000,0,PASS
+Categorical Values,N/A,N/A,N/A
+Date Validation,N/A,N/A,N/A
+Outliers,40000,0,PASS
+Target Validation,5000,0,PASS
+Consistency,5000,0,PASS
+Leakage,5000,0 direct issues; 1 synthetic target-dependence warning,WARNING

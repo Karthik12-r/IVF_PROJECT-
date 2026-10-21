@@ -1,0 +1,57 @@
+{
+  "dataset": "ivf_5000_dataset.csv",
+  "rows": 5000,
+  "columns": 9,
+  "feature_columns": [
+    "age",
+    "bmi",
+    "amh",
+    "fsh",
+    "previous_ivf",
+    "stress",
+    "sleep_hours",
+    "exercise_min"
+  ],
+  "target": "IVF_Success",
+  "target_distribution": {
+    "0": 1649,
+    "1": 3351
+  },
+  "missing_values_by_column": {
+    "age": 0,
+    "bmi": 0,
+    "amh": 0,
+    "fsh": 0,
+    "previous_ivf": 0,
+    "stress": 0,
+    "sleep_hours": 0,
+    "exercise_min": 0,
+    "IVF_Success": 0
+  },
+  "duplicate_rows": 0,
+  "dtypes": {
+    "age": "int64",
+    "bmi": "float64",
+    "amh": "float64",
+    "fsh": "float64",
+    "previous_ivf": "int64",
+    "stress": "int64",
+    "sleep_hours": "float64",
+    "exercise_min": "int64",
+    "IVF_Success": "int64"
+  },
+  "feature_types": {
+    "numeric": [
+      "age",
+      "bmi",
+      "amh",
+      "fsh",
+      "previous_ivf",
+      "stress",
+      "sleep_hours",
+      "exercise_min"
+    ],
+    "categorical": []
+  },
+  "leakage_review": "IVF_Success is excluded from features. The eight input columns match the existing model metadata; no explicit target-derived column is present. Inspection of generate_ivf_5000.py shows labels are synthetically sampled from probabilities assigned by hand-written feature thresholds. Thus the features are intentionally related to the target, and measured performance reflects recovery of those synthetic rules, not observed IVF outcomes or clinical validity."
+}

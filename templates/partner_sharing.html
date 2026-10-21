@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Sharing & Privacy{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0"><i class="fas fa-shield-alt me-2"></i>Sharing & Privacy</h2>
+        <a href="{{ url_for('patient_dashboard') }}" class="btn btn-outline-secondary btn-sm">Back to dashboard</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form method="POST">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="treatment_shared" {% if permissions.treatment_shared %}checked{% endif %}>
+                            <label class="form-check-label">Treatment details</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="appointments_shared" {% if permissions.appointments_shared %}checked{% endif %}>
+                            <label class="form-check-label">Appointments</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="medications_shared" {% if permissions.medications_shared %}checked{% endif %}>
+                            <label class="form-check-label">Medications</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="wellness_shared" {% if permissions.wellness_shared %}checked{% endif %}>
+                            <label class="form-check-label">Wellness</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="messages_enabled" {% if permissions.messages_enabled %}checked{% endif %}>
+                            <label class="form-check-label">Messages</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="tasks_enabled" {% if permissions.tasks_enabled %}checked{% endif %}>
+                            <label class="form-check-label">Shared tasks</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="nutrition_shared" {% if permissions.nutrition_shared %}checked{% endif %}>
+                            <label class="form-check-label">Nutrition</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="doctor_notes_shared" {% if permissions.doctor_notes_shared %}checked{% endif %}>
+                            <label class="form-check-label">Doctor notes</label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-4">Save settings</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

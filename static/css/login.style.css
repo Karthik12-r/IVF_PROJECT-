@@ -1,0 +1,53 @@
+/* ===========================
+   LOGIN PAGE STYLES
+   =========================== */
+
+body {
+  background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1100px;
+}
+
+h2 {
+  font-weight: 700;
+}
+
+.lead {
+  color: #6c757d;
+}
+
+/* Login card */
+.card {
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.card-body {
+  padding: 2.5rem;
+}
+
+.btn-lg {
+  padding: 0.75rem;
+  font-weight: 600;
+}
+
+.text-muted a {
+  color: #2575fc;
+  text-decoration: none;
+}
+
+.text-muted a:hover {
+  text-decoration: underline;
+}
+
+/* Role cards */
+.role-card i {
+  transition: transform 0.3s;
+}
+
+.role-card:hover i {
+  transform: scale(1.1);
+}

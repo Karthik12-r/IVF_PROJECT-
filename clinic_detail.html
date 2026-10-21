@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% block title %}{{ clinic.name }} - IVF Journey Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white">
+                    <h2 class="mb-0">
+                        <i class="fas fa-hospital me-3"></i>{{ clinic.name }}
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="text-success">Location</h5>
+                            <p class="mb-2">
+                                <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                {{ clinic.address }}, {{ clinic.city }}, {{ clinic.state }}
+                            </p>
+                            {% if clinic.latitude and clinic.longitude %}
+                                <button class="btn btn-outline-info btn-sm" onclick="viewOnMap({{ clinic.latitude }}, {{ clinic.longitude }})">
+                                    <i class="fas fa-map-marked-alt me-1"></i>View on Map
+                                </button>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="text-success">Contact Information</h5>
+                            {% if clinic.phone %}
+                                <p class="mb-2">
+                                    <i class="fas fa-phone text-success me-2"></i>
+                                    <a href="tel:{{ clinic.phone }}" class="text-decoration-none">{{ clinic.phone }}</a>
+                                </p>
+                            {% endif %}
+                            {% if clinic.contact_number %}
+                                <p class="mb-2">
+                                    <i class="fas fa-mobile-alt text-success me-2"></i>
+                                    <a href="tel:{{ clinic.contact_number }}" class="text-decoration-none">{{ clinic.contact_number }}</a>
+                                </p>
+                            {% endif %}
+
+                        </div>
+                    </div>
+
+                    {% if clinic.description %}
+                        <div class="mt-4">
+                            <h5 class="text-success">About the Clinic</h5>
+                            <p class="text-muted">{{ clinic.description }}</p>
+                        </div>
+                    {% endif %}
+
+                    <div class="mt-4">
+                        <h5 class="text-success">Associated Doctors</h5>
+                        {% set default_doctors = [
+                            {'name': 'Dr. Aarav Mehta', 'specialization': 'IVF Specialist'},
+                            {'name': 'Dr. Riya Kapoor', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Karan Malhotra', 'specialization': 'Reproductive Endocrinologist'},
+                            {'name': 'Dr. Sneha Iyer', 'specialization': 'Fertility Consultant'},
+                            {'name': 'Dr. Anil Verma', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Meera Shah', 'specialization': 'Obstetrics & Gynecology'},
+                            {'name': 'Dr. Raghav Singh', 'specialization': 'Male Infertility Specialist'},
+                            {'name': 'Dr. Nisha Rathod', 'specialization': 'Laparoscopic Surgeon'},
+                            {'name': 'Dr. Arjun Nair', 'specialization': 'Andrologist'},
+                            {'name': 'Dr. Pooja Soni', 'specialization': 'IVF Specialist'},
+                            {'name': 'Dr. Vivek Chandra', 'specialization': 'Fertility Specialist'},
+                            {'name': 'Dr. Kavya Bhandari', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Rajiv Patel', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Sandhya Menon', 'specialization': 'IVF Specialist'},
+                            {'name': 'Dr. Devansh Kulkarni', 'specialization': 'Reproductive Endocrinologist'},
+                            {'name': 'Dr. Priya D\'Souza', 'specialization': 'Gynecology & Obstetrics'},
+                            {'name': 'Dr. Manish Agarwal', 'specialization': 'Andrology Expert'},
+                            {'name': 'Dr. Aditi Joshi', 'specialization': 'Infertility Specialist'},
+                            {'name': 'Dr. Rohit Anand', 'specialization': 'Urologist (Male Fertility)'},
+                            {'name': 'Dr. Shreya Pillai', 'specialization': 'Fertility Consultant'},
+                            {'name': 'Dr. Siddharth Jain', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Neha Srivastava', 'specialization': 'Laparoscopic Surgeon'},
+                            {'name': 'Dr. Harish Rao', 'specialization': 'Fertility Specialist'},
+                            {'name': 'Dr. Ishita Banerjee', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Varun Saxena', 'specialization': 'Andrologist'},
+                            {'name': 'Dr. Tanvi Raut', 'specialization': 'IVF Consultant'},
+                            {'name': 'Dr. Sameer Deshmukh', 'specialization': 'Reproductive Endocrinologist'},
+                            {'name': 'Dr. Swati Kulshreshtha', 'specialization': 'Infertility Consultant'},
+                            {'name': 'Dr. Gautam Bhosale', 'specialization': 'Male Infertility Specialist'},
+                            {'name': 'Dr. Rachana Mishra', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Prakash Shetty', 'specialization': 'Urologist'},
+                            {'name': 'Dr. Ananya Thakur', 'specialization': 'IVF Specialist'},
+                            {'name': 'Dr. Hemant Kulkarni', 'specialization': 'Reproductive Surgeon'},
+                            {'name': 'Dr. Leena George', 'specialization': 'Fertility Endocrinologist'},
+                            {'name': 'Dr. Aakash Bedi', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Sana Mirza', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Mahesh Reddy', 'specialization': 'IVF & Reproductive Surgeon'},
+                            {'name': 'Dr. Trisha Sen', 'specialization': 'Fertility Specialist'},
+                            {'name': 'Dr. Kunal Purohit', 'specialization': 'Male Fertility Specialist'},
+                            {'name': 'Dr. Yamini Kaul', 'specialization': 'Obstetrics & Gynecology'},
+                            {'name': 'Dr. Abhinav Tiwari', 'specialization': 'IVF Consultant'},
+                            {'name': 'Dr. Esha Mahajan', 'specialization': 'Gyne Laparoscopic Surgeon'},
+                            {'name': 'Dr. Varsha Gowda', 'specialization': 'IVF Specialist'},
+                            {'name': 'Dr. Deepak Jain', 'specialization': 'Andrology & Urology'},
+                            {'name': 'Dr. Ritu Shelar', 'specialization': 'Reproductive Medicine Consultant'},
+                            {'name': 'Dr. Jayant Bhatt', 'specialization': 'Andrologist'},
+                            {'name': 'Dr. Ayesha Haque', 'specialization': 'Fertility Specialist'},
+                            {'name': 'Dr. Nikhil Sinha', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Zoya Rahman', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Shantanu Bose', 'specialization': 'Fertility Surgeon'},
+                            {'name': 'Dr. Amit Shastri', 'specialization': 'IVF Consultant'},
+                            {'name': 'Dr. Padmini Rao', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Chirag Vyas', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Mitali Sengupta', 'specialization': 'Fertility Specialist'},
+                            {'name': 'Dr. Sandeep Kulshrestha', 'specialization': 'Reproductive Endocrinologist'},
+                            {'name': 'Dr. Rupa Nambiar', 'specialization': 'Obstetrics & Gynecology'},
+                            {'name': 'Dr. Avinash Pandey', 'specialization': 'Male Infertility Specialist'},
+                            {'name': 'Dr. Charu Jain', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Nitin Chatterjee', 'specialization': 'Andrologist'},
+                            {'name': 'Dr. Snehal Pathak', 'specialization': 'Laparoscopic Surgeon'},
+                            {'name': 'Dr. Harpreet Kaur', 'specialization': 'IVF Specialist'},
+                            {'name': 'Dr. Suraj Wadhwa', 'specialization': 'Andrology Specialist'},
+                            {'name': 'Dr. Meenal Sood', 'specialization': 'Gynecology Consultant'},
+                            {'name': 'Dr. Farhan Zaidi', 'specialization': 'Urologist'},
+                            {'name': 'Dr. Roshni Pillai', 'specialization': 'Infertility Specialist'},
+                            {'name': 'Dr. Kartik Rawat', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Vandana Sheth', 'specialization': 'IVF Consultant'},
+                            {'name': 'Dr. Harshad Desai', 'specialization': 'Reproductive Endocrinologist'},
+                            {'name': 'Dr. Keerthi Reddy', 'specialization': 'Fertility Consultant'},
+                            {'name': 'Dr. Sanjay Nambiar', 'specialization': 'Andrologist'},
+                            {'name': 'Dr. Nandita Sharma', 'specialization': 'Gynecology & Obstetrics'},
+                            {'name': 'Dr. Vikas Bhat', 'specialization': 'Male Fertility Expert'},
+                            {'name': 'Dr. Nidhi Solanki', 'specialization': 'IVF Specialist'},
+                            {'name': 'Dr. Arvind Babu', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Harini Subramanian', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Sushant Gupta', 'specialization': 'Uro-Andrologist'},
+                            {'name': 'Dr. Shalini Saxena', 'specialization': 'Fertility Consultant'},
+                            {'name': 'Dr. Abdul Wahid', 'specialization': 'Reproductive Medicine Specialist'},
+                            {'name': 'Dr. Rohan Deshpande', 'specialization': 'Urologist'},
+                            {'name': 'Dr. Ira Nambiar', 'specialization': 'Obstetrics & Gynecology'},
+                            {'name': 'Dr. Yuvraj Singh', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Mahima Verghese', 'specialization': 'Fertility Specialist'},
+                            {'name': 'Dr. Raghunandan Iyer', 'specialization': 'Andrologist'},
+                            {'name': 'Dr. Saloni Gupta', 'specialization': 'IVF Specialist'},
+                            {'name': 'Dr. Tushar Wagle', 'specialization': 'Reproductive Endocrinologist'},
+                            {'name': 'Dr. Ratna Mallick', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Pradeep Sahu', 'specialization': 'Male Infertility Specialist'},
+                            {'name': 'Dr. Zainab Khan', 'specialization': 'Laparoscopic Surgeon'},
+                            {'name': 'Dr. Vinay Bharadwaj', 'specialization': 'Urologist'},
+                            {'name': 'Dr. Rachit Bansal', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Pooja Bhargava', 'specialization': 'Fertility Specialist'},
+                            {'name': 'Dr. Mohan Pillai', 'specialization': 'Gynecology Consultant'},
+                            {'name': 'Dr. Eesha Raut', 'specialization': 'Fertility Endocrinologist'},
+                            {'name': 'Dr. Hardik Patel', 'specialization': 'Andrologist'},
+                            {'name': 'Dr. Nilofer Shaikh', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Ashok Menon', 'specialization': 'IVF Consultant'},
+                            {'name': 'Dr. Shreya Nagpal', 'specialization': 'Reproductive Surgeon'},
+                            {'name': 'Dr. Samarjeet Singh', 'specialization': 'Male Fertility Specialist'},
+                            {'name': 'Dr. Kanika Ahuja', 'specialization': 'Fertility Consultant'},
+                            {'name': 'Dr. Faisal Mir', 'specialization': 'Uro-Andrologist'},
+                            {'name': 'Dr. Bhavik Shah', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Rupali Deshmukh', 'specialization': 'Gynecology Specialist'},
+                            {'name': 'Dr. Arvind Chauhan', 'specialization': 'Andrologist'},
+                            {'name': 'Dr. Maira Thomas', 'specialization': 'IVF Consultant'},
+                            {'name': 'Dr. Yogesh Bhatt', 'specialization': 'Reproductive Endocrinologist'},
+                            {'name': 'Dr. Hina Parikh', 'specialization': 'Obstetrics & Gynecology'},
+                            {'name': 'Dr. Manan Sethi', 'specialization': 'Male Infertility Specialist'},
+                            {'name': 'Dr. Deepa D\'cruz', 'specialization': 'IVF Specialist'},
+                            {'name': 'Dr. Prem Solanki', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Sneha Venkatesh', 'specialization': 'Gynecology Consultant'},
+                            {'name': 'Dr. Suchit Rao', 'specialization': 'Andrologist'},
+                            {'name': 'Dr. Lavanya Subba', 'specialization': 'Fertility Specialist'},
+                            {'name': 'Dr. Bharat Ramani', 'specialization': 'Urologist'},
+                            {'name': 'Dr. Kirti Naik', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Akarsh Gupta', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Nivedita Nanda', 'specialization': 'IVF Specialist'},
+                            {'name': 'Dr. Paresh Choksi', 'specialization': 'Andrology Expert'},
+                            {'name': 'Dr. Sana Fatima', 'specialization': 'Gyne Laparoscopic Surgeon'},
+                            {'name': 'Dr. Aditya Pillai', 'specialization': 'Reproductive Surgeon'},
+                            {'name': 'Dr. Jaya Bhattacharya', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Manjunath Gowda', 'specialization': 'Uro-Andrologist'},
+                            {'name': 'Dr. Simran Shah', 'specialization': 'Fertility Consultant'},
+                            {'name': 'Dr. Sarthak Awasthi', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Tanisha Purohit', 'specialization': 'IVF Specialist'},
+                            {'name': 'Dr. Anant Mehra', 'specialization': 'Male Infertility Specialist'},
+                            {'name': 'Dr. Roma Patel', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Keshav Sharma', 'specialization': 'Reproductive Endocrinologist'},
+                            {'name': 'Dr. Nadiya Cherian', 'specialization': 'Obstetrics & Gynecology'},
+                            {'name': 'Dr. Gaurav Luthra', 'specialization': 'Andrologist'},
+                            {'name': 'Dr. Raina Ansari', 'specialization': 'IVF Consultant'},
+                            {'name': 'Dr. Rajeshwari Reddy', 'specialization': 'Fertility Specialist'},
+                            {'name': 'Dr. Saurabh Trivedi', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Aafreen Siddiqui', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Chetan Rao', 'specialization': 'Urologist'},
+                            {'name': 'Dr. Puja Nanda', 'specialization': 'IVF Consultant'},
+                            {'name': 'Dr. Nihal George', 'specialization': 'Reproductive Surgeon'},
+                            {'name': 'Dr. Abhay Kulkarni', 'specialization': 'Andrology Specialist'},
+                            {'name': 'Dr. Lavina Shetty', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Jaideep Soni', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Noor Jehan', 'specialization': 'Laparoscopic Surgeon'},
+                            {'name': 'Dr. Viren Mathew', 'specialization': 'Andrologist'},
+                            {'name': 'Dr. Kritika Desai', 'specialization': 'Fertility Consultant'},
+                            {'name': 'Dr. Rishabh Kaushik', 'specialization': 'Reproductive Endocrinologist'},
+                            {'name': 'Dr. Preeti Balakrishnan', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Dev Patel', 'specialization': 'Urologist'},
+                            {'name': 'Dr. Mansi Gupta', 'specialization': 'Fertility Specialist'},
+                            {'name': 'Dr. Yashwant Rao', 'specialization': 'Male Infertility Specialist'},
+                            {'name': 'Dr. Sadaf Mir', 'specialization': 'IVF Consultant'},
+                            {'name': 'Dr. Lakshay Jain', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Roohi Shah', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Varad Kulkarni', 'specialization': 'Andrologist'},
+                            {'name': 'Dr. Smita Bansode', 'specialization': 'Gynecology Expert'},
+                            {'name': 'Dr. Punit Malhotra', 'specialization': 'IVF Specialist'},
+                            {'name': 'Dr. Gayatri Samant', 'specialization': 'Obstetrics & Gynecology'},
+                            {'name': 'Dr. Abhishek Rajpurohit', 'specialization': 'Reproductive Endocrinologist'},
+                            {'name': 'Dr. Nargis Alam', 'specialization': 'Fertility Consultant'},
+                            {'name': 'Dr. Sachin Bhosale', 'specialization': 'Urologist'},
+                            {'name': 'Dr. Anahita Irani', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Hriday Batra', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Padmini Shastry', 'specialization': 'Fertility Specialist'},
+                            {'name': 'Dr. Mohit Bhandari', 'specialization': 'Andrologist'},
+                            {'name': 'Dr. Nazia Qureshi', 'specialization': 'Gyne Laparoscopic Surgeon'},
+                            {'name': 'Dr. Jeevan Nath', 'specialization': 'Male Infertility Specialist'},
+                            {'name': 'Dr. Mounika Reddy', 'specialization': 'IVF Consultant'},
+                            {'name': 'Dr. Brijesh Arora', 'specialization': 'Reproductive Surgeon'},
+                            {'name': 'Dr. Divya Rangarajan', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Tuhin Barua', 'specialization': 'Uro-Andrologist'},
+                            {'name': 'Dr. Sufiya Khan', 'specialization': 'Fertility Specialist'},
+                            {'name': 'Dr. Yatin Shah', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Kaveri Chandran', 'specialization': 'Obstetrics & Gynecology'},
+                            {'name': 'Dr. Shailesh Talwar', 'specialization': 'Andrology Specialist'},
+                            {'name': 'Dr. Falak Jain', 'specialization': 'Fertility Consultant'},
+                            {'name': 'Dr. Omkar Kulkarni', 'specialization': 'Reproductive Endocrinologist'},
+                            {'name': 'Dr. Rupali Patankar', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Neil Rodrigues', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Aastha Sharma', 'specialization': 'IVF Specialist'},
+                            {'name': 'Dr. Prakash Narayan', 'specialization': 'Urologist'},
+                            {'name': 'Dr. Bhavya Menon', 'specialization': 'Fertility Specialist'},
+                            {'name': 'Dr. Shantanu Dey', 'specialization': 'Andrologist'},
+                            {'name': 'Dr. Farida Noor', 'specialization': 'Gynecology Consultant'},
+                            {'name': 'Dr. Daksh Yadav', 'specialization': 'Reproductive Surgeon'},
+                            {'name': 'Dr. Nisha Choudhary', 'specialization': 'Gynecologist'},
+                            {'name': 'Dr. Jignesh Chauhan', 'specialization': 'Embryologist'},
+                            {'name': 'Dr. Hemangi Lele', 'specialization': 'Laparoscopic Surgeon'},
+                            {'name': 'Dr. Kabir Surana', 'specialization': 'Andrologist'}
+                        ] %}
+                        {% set len_doctors = default_doctors|length %}
+                        {% set doctor_index = clinic.id - (clinic.id // len_doctors) * len_doctors %}
+                        {% set default_doctor = default_doctors[doctor_index] %}
+                        <div class="row">
+                            {% for doctor in clinic.doctors %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-success">
+                                        <div class="card-body">
+                                            <h6 class="card-title">
+                                                <i class="fas fa-user-md text-success me-2"></i>
+                                                Dr. {{ doctor.first_name }} {{ doctor.last_name }}
+                                            </h6>
+                                            <p class="card-text small text-muted">
+                                                {{ doctor.specialization or 'Fertility Specialist' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <!-- Always show at least one default doctor -->
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-success">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fas fa-user-md text-success me-2"></i>
+                                            {{ default_doctor.name }}
+                                        </h6>
+                                        <p class="card-text small text-muted">
+                                            {{ default_doctor.specialization }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <a href="{{ url_for('find_clinic') }}" class="btn btn-outline-success me-2">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Search
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Function to view clinic on Google Maps
+function viewOnMap(lat, lng) {
+    var url = "https://www.google.com/maps/search/?api=1&query=" + lat + "," + lng;
+    window.open(url, '_blank');
+}
+</script>
+{% endblock %}
+
+

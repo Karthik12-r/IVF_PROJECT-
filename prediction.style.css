@@ -1,0 +1,526 @@
+/* IVF Journey Tracker - Prediction Page Styles */
+
+/* Prediction Cards */
+.prediction-card {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.prediction-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-5px);
+}
+
+/* Gauge Components */
+.prediction-gauge {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+}
+
+.gauge-container {
+    position: relative;
+    width: 200px;
+    height: 100px;
+    overflow: hidden;
+}
+
+.gauge-fill {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: conic-gradient(
+        var(--success-color) calc(var(--percentage) * 1%),
+        var(--light-color) calc(var(--percentage) * 1%)
+    );
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: background 1s ease-in-out;
+}
+
+.gauge-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.gauge-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--success-color);
+}
+
+.gauge-label {
+    display: block;
+    color: var(--secondary-color);
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+/* Quality Score Components */
+.quality-score .score-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0 auto;
+    box-shadow: var(--shadow-md);
+}
+
+.quality-grade .grade-display {
+    width: 80px;
+    height: 80px;
+    border: 3px solid var(--success-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+}
+
+.grade-letter {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--success-color);
+}
+
+/* Factors List */
+.factors-list .factor-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.factors-list .factor-item:last-child {
+    border-bottom: none;
+}
+
+/* Protocol Advisor */
+.protocol-overview {
+    background: var(--medical-light);
+    padding: 1.5rem;
+    border-radius: var(--border-radius-md);
+    margin-bottom: 1.5rem;
+}
+
+.protocol-name {
+    background: white;
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--medical-border);
+}
+
+.protocol-name h5 {
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.personalization-score {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.personalization-score small {
+    color: var(--secondary-color);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+/* Medication List */
+.medication-list li {
+    background: var(--medical-light);
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius-md);
+    margin-bottom: 0.5rem;
+    border-left: 3px solid var(--primary-color);
+}
+
+/* Timing Details */
+.timing-details .timing-item {
+    background: white;
+    padding: 0.75rem;
+    border-radius: var(--border-radius-md);
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--medical-border);
+}
+
+/* Recommendations */
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.recommendation-item {
+    background: var(--medical-light);
+    padding: 1.5rem;
+    border-radius: var(--border-radius-md);
+    border-left: 4px solid var(--success-color);
+}
+
+.recommendation-item h6 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.recommendation-item ul li {
+    margin-bottom: 0.5rem;
+}
+
+/* Confidence Indicator */
+.confidence-indicator {
+    background: white;
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--medical-border);
+    margin-top: 1rem;
+}
+
+.confidence-indicator small {
+    color: var(--secondary-color);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+/* Prediction Metrics */
+.prediction-metrics {
+    background: var(--medical-light);
+    padding: 1.5rem;
+    border-radius: var(--border-radius-md);
+}
+
+.metric-item {
+    margin-bottom: 1rem;
+}
+
+.metric-item:last-child {
+    margin-bottom: 0;
+}
+
+.metric-item .d-flex {
+    margin-bottom: 0.5rem;
+}
+
+.metric-item .progress {
+    height: 6px;
+}
+
+/* ========== IVF Success Improvement Simulator Styles ========== */
+
+/* Simulator Section */
+.simulator-section {
+    margin-top: 2rem;
+    scroll-margin-top: 20px;
+}
+
+.simulator-header {
+    background: linear-gradient(135deg, #6f42c1 0%, #0d6efd 100%);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem 2rem;
+    color: white;
+}
+
+/* Improvement Cards */
+.improvement-card {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    height: 100%;
+    position: relative;
+}
+
+.improvement-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-5px);
+}
+
+.improvement-card .card-header {
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    border-bottom: none;
+}
+
+.improvement-card .card-body {
+    padding: 1.25rem;
+}
+
+.improvement-card.combined-card {
+    border: 2px solid #ffc107;
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.05) 0%, rgba(255, 193, 7, 0.1) 100%);
+}
+
+.improvement-card.combined-card .card-header {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9f00 100%);
+    color: #000;
+}
+
+/* Delta Badge */
+.delta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.delta-badge.positive {
+    background: rgba(25, 135, 84, 0.15);
+    color: #198754;
+}
+
+.delta-badge.very-positive {
+    background: rgba(13, 202, 240, 0.15);
+    color: #0dcaf0;
+}
+
+/* Improvement Progress Bar */
+.improvement-progress {
+    height: 10px;
+    border-radius: 5px;
+    background-color: #e9ecef;
+    margin: 0.75rem 0;
+    overflow: hidden;
+}
+
+.improvement-progress .progress-bar {
+    border-radius: 5px;
+    transition: width 1s ease-in-out;
+}
+
+/* Baseline Progress Bar */
+.baseline-progress {
+    height: 12px;
+    border-radius: 6px;
+    background-color: #e9ecef;
+    position: relative;
+    margin: 1rem 0;
+}
+
+.baseline-progress .baseline-bar {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #0d6efd, #6610f2);
+    transition: width 1s ease-in-out;
+}
+
+/* Comparison Chart Container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    padding: 1rem;
+}
+
+/* Explanation Text */
+.explanation-text {
+    background: var(--medical-light);
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius-md);
+    border-left: 3px solid var(--info-color);
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    margin-top: 0.75rem;
+    line-height: 1.6;
+}
+
+.explanation-text i {
+    color: var(--info-color);
+}
+
+/* Simulator Badge - indicator for how much improvement */
+.improvement-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.improvement-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    flex: 1;
+}
+
+.improvement-value {
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-align: right;
+    min-width: 60px;
+}
+
+/* Loading State */
+.simulator-loading {
+    text-align: center;
+    padding: 3rem;
+}
+
+.simulator-loading .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Empty State */
+.simulator-empty {
+    text-align: center;
+    padding: 2rem;
+    color: var(--secondary-color);
+}
+
+/* Current Baseline Card */
+.baseline-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+}
+
+.baseline-card .baseline-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Improvement Tags */
+.sim-factor-tag {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sim-factor-tag.bmi-tag { background: rgba(13, 110, 253, 0.1); color: #0d6efd; }
+.sim-factor-tag.stress-tag { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
+.sim-factor-tag.sleep-tag { background: rgba(111, 66, 193, 0.1); color: #6f42c1; }
+.sim-factor-tag.exercise-tag { background: rgba(25, 135, 84, 0.1); color: #198754; }
+.sim-factor-tag.combined-tag { background: rgba(255, 193, 7, 0.15); color: #856404; }
+
+/* Delta Arrow */
+.delta-arrow {
+    display: inline-block;
+    animation: deltaPulse 2s ease-in-out infinite;
+}
+
+@keyframes deltaPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.2); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .simulator-header {
+        padding: 1rem 1.25rem;
+    }
+    .simulator-header h3 {
+        font-size: 1.25rem;
+    }
+    .baseline-card .baseline-value {
+        font-size: 2rem;
+    }
+    .chart-container {
+        height: 250px;
+    }
+}
+
+/* Disclaimer */
+.disclaimer-alert {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    text-align: center;
+}
+
+.disclaimer-alert .alert-icon {
+    font-size: 3rem;
+    color: var(--warning-color);
+    margin-bottom: 1rem;
+}
+
+.disclaimer-alert h5 {
+    color: var(--warning-color);
+    margin-bottom: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .prediction-gauge {
+        width: 150px;
+        height: 150px;
+    }
+
+    .gauge-container {
+        width: 150px;
+        height: 75px;
+    }
+
+    .gauge-fill {
+        width: 150px;
+        height: 150px;
+    }
+
+    .gauge-value {
+        font-size: 1.5rem;
+    }
+
+    .quality-score .score-circle,
+    .quality-grade .grade-display {
+        width: 60px;
+        height: 60px;
+    }
+
+    .quality-score .score-circle {
+        font-size: 1.2rem;
+    }
+
+    .grade-letter {
+        font-size: 1.5rem;
+    }
+
+    .recommendations-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .protocol-overview {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .prediction-card .card-body {
+        padding: 1rem;
+    }
+
+    .factors-list .factor-item {
+        padding: 0.25rem 0;
+    }
+
+    .medication-list li,
+    .timing-details .timing-item {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .recommendation-item {
+        padding: 1rem;
+    }
+
+    .disclaimer-alert {
+        padding: 1.5rem;
+    }
+}

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}IVF Journey Tracker{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#129505;</text></svg>" />
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhseINkfSgoIHPqNkRHE2pRESqmAudayI1AI=" crossorigin=""/>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.style.css') }}">
+    <!-- Dashboard CSS (loaded globally for consistency) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/patient_dashboard.style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/doctor_dashboard.style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+                <i class="fas fa-heartbeat me-2 text-primary"></i>
+                <strong>IVF Journey Tracker</strong>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            {% if session.user_id and session.user_type == 'patient' %}
+            <!-- Patient Quick Nav -->
+            <div class="patient-quick-nav d-none d-lg-flex align-items-center gap-3 ms-3 flex-wrap">
+                <a href="{{ url_for('patient_dashboard') }}" class="quick-nav-link text-decoration-none text-center" title="Dashboard">
+                    <i class="fas fa-tachometer-alt text-primary"></i>
+                    <small>Dashboard</small>
+                </a>
+                <a href="{{ url_for('wellness') }}" class="quick-nav-link text-decoration-none text-center" title="Wellness">
+                    <i class="fas fa-leaf text-success"></i>
+                    <small>Wellness</small>
+                </a>
+                <a href="{{ url_for('nutrition') }}" class="quick-nav-link text-decoration-none text-center" title="Nutrition">
+                    <i class="fas fa-apple-alt text-info"></i>
+                    <small>Nutrition</small>
+                </a>
+                <a href="{{ url_for('ivf_predictor') }}" class="quick-nav-link text-decoration-none text-center" title="AI Prediction">
+                    <i class="fas fa-chart-line text-warning"></i>
+                    <small>AI Prediction</small>
+                </a>
+                <a href="{{ url_for('my_documents') }}" class="quick-nav-link text-decoration-none text-center" title="Documents">
+                    <i class="fas fa-file-medical text-secondary"></i>
+                    <small>Documents</small>
+                </a>
+                <a href="{{ url_for('find_clinic') }}" class="quick-nav-link text-decoration-none text-center" title="Clinic">
+                    <i class="fas fa-hospital text-danger"></i>
+                    <small>Clinic</small>
+                </a>
+                <a href="/chatbot" class="quick-nav-link text-decoration-none text-center" title="AI Chatbot">
+                    <i class="fas fa-robot text-info"></i>
+                    <small>Chatbot</small>
+                </a>
+                <a href="{{ url_for('faq') }}" class="quick-nav-link text-decoration-none text-center" title="FAQ">
+                    <i class="fas fa-question-circle text-primary"></i>
+                    <small>FAQ</small>
+                </a>
+                <a href="{{ url_for('my_treatment') }}" class="quick-nav-link text-decoration-none text-center" title="My Treatment">
+                    <i class="fas fa-syringe text-purple" style="color: #6f42c1;"></i>
+                    <small>Treatment</small>
+                </a>
+                <a href="{{ url_for('my_reminders') }}" class="quick-nav-link text-decoration-none text-center" title="Reminders">
+                    <i class="fas fa-bell text-warning"></i>
+                    <small>Reminders</small>
+                </a>
+                <a href="{{ url_for('messages') }}" class="quick-nav-link text-decoration-none text-center" title="Messages">
+                    <i class="fas fa-envelope text-success"></i>
+                    <small>Messages</small>
+                </a>
+                <a href="{{ url_for('forum') }}" class="quick-nav-link text-decoration-none text-center" title="Community">
+                    <i class="fas fa-users text-primary"></i>
+                    <small>Community</small>
+                </a>
+                <a href="{{ url_for('mindfulness') }}" class="quick-nav-link text-decoration-none text-center" title="Mindfulness">
+                    <i class="fas fa-spa text-pink" style="color: #e83e8c;"></i>
+                    <small>Mindfulness</small>
+                </a>
+            </div>
+            {% endif %}
+
+            {% if request.endpoint != 'login' %}
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if session.user_id %}
+                        {% if session.user_type == 'doctor' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('doctor_dashboard') }}">
+                                    <i class="fas fa-stethoscope me-1"></i>Doctor Dashboard
+                                </a>
+                            </li>
+                        {% elif session.user_type == 'admin' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                                    <i class="fas fa-user-shield me-1"></i>Admin Panel
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+
+                <ul class="navbar-nav">
+                    {% if session.user_id %}
+                        <!-- Notification Bell -->
+                        <li class="nav-item dropdown me-3">
+                            <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-bell fa-lg"></i>
+                                <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                                    0
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 320px; max-height: 400px; overflow-y: auto;">
+                                <li class="dropdown-header d-flex justify-content-between align-items-center">
+                                    <strong>Notifications</strong>
+                                    <a href="{{ url_for('notifications_page') }}" class="text-decoration-none small">View All</a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <div id="notificationList">
+                                    <li class="dropdown-item text-center text-muted py-3">Loading...</li>
+                                </div>
+                                <li><hr class="dropdown-divider"></li>
+                                <li class="text-center">
+                                    <button class="btn btn-sm btn-link text-decoration-none" onclick="markAllNotificationsRead()">Mark all as read</button>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i>Account
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% if session.user_type == 'patient' %}
+                                    <li><a class="dropdown-item" href="{{ url_for('update_profile') }}">
+                                        <i class="fas fa-edit me-2"></i>Update Profile
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('my_cycle_notes') }}">
+                                        <i class="fas fa-file-medical-alt me-2"></i>My Doctor's Notes
+                                    </a></li>
+                                {% elif session.user_type == 'doctor' %}
+                                    <li><a class="dropdown-item" href="{{ url_for('my_notes') }}">
+                                        <i class="fas fa-notes-medical me-2"></i>My Notes
+                                    </a></li>
+                                {% elif session.user_type == 'admin' %}
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_clinics') }}">
+                                        <i class="fas fa-hospital me-2"></i>Manage Clinics
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_users') }}">
+                                        <i class="fas fa-users-cog me-2"></i>Manage Users
+                                    </a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ url_for('login', type='patient') }}">
+                                    <i class="fas fa-user-md me-2"></i>Patient Login
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('login', type='doctor') }}">
+                                    <i class="fas fa-stethoscope me-2"></i>Doctor Login
+                                </a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('register') }}">
+                                <i class="fas fa-user-plus me-1"></i>Register
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show">
+                        <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'info-circle' }} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Chat Widget (if logged in) -->
+    {% if session.user_id %}
+        <div id="chatWidget" class="chat-widget">
+            <div class="chat-header" onclick="openChatbotPopup()">
+                <i class="fas fa-comments me-2"></i>
+                <span>AI Assistant</span>
+                <i class="fas fa-external-link-alt" id="chatToggle"></i>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <footer class="bg-light mt-5 py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>IVF Journey Tracker</h5>
+                    <p class="text-muted">Supporting your fertility journey with AI-powered insights and comprehensive tracking.</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>Important Notice</h6>
+                    <p class="text-muted small">
+                        This application provides information and tracking tools.
+                        Always consult with your healthcare provider for medical decisions.
+                    </p>
+                    <div class="mt-3">
+                        <a href="{{ url_for('privacy_policy') }}" class="text-muted small me-3">Privacy Policy</a>
+                        <a href="{{ url_for('business_model') }}" class="text-muted small me-3">Business Model</a>
+                        <a href="{{ url_for('roadmap') }}" class="text-muted small">Product Roadmap</a>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center text-muted">
+                <small>&copy; 2025 IVF Journey Tracker. All rights reserved.</small>
+            </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet JS for Maps -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% if session.user_id %}
+        <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+    {% endif %} 
+    {% block scripts %}{% endblock %}
+</body>
+</html>

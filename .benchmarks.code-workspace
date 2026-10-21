@@ -1,0 +1,52 @@
+{
+	"folders": [
+		{
+			"path": "../XAMPP/htdocs/Birac mini project/ChoreCompanion/.benchmarks"
+		},
+		{
+			"path": "../XAMPP/htdocs/Birac mini project/ChoreCompanion/.git"
+		},
+		{
+			"path": "../XAMPP/htdocs/Birac mini project/ChoreCompanion/.local"
+		},
+		{
+			"path": "../XAMPP/htdocs/Birac mini project/ChoreCompanion/.pytest_cache"
+		},
+		{
+			"path": "../XAMPP/htdocs/Birac mini project/ChoreCompanion/.venv"
+		},
+		{
+			"path": "../XAMPP/htdocs/Birac mini project/ChoreCompanion/__pycache__"
+		},
+		{
+			"path": "../XAMPP/htdocs/Birac mini project/ChoreCompanion/attached_assets"
+		},
+		{
+			"path": "../XAMPP/htdocs/Birac mini project/ChoreCompanion/Datasets_Backup"
+		},
+		{
+			"path": "../XAMPP/htdocs/Birac mini project/ChoreCompanion/instance"
+		},
+		{
+			"path": "../XAMPP/htdocs/Birac mini project/ChoreCompanion/ml_models"
+		},
+		{
+			"path": "../XAMPP/htdocs/Birac mini project/ChoreCompanion/ml_models.py file next._models"
+		},
+		{
+			"path": "../XAMPP/htdocs/Birac mini project/ChoreCompanion/models"
+		},
+		{
+			"path": "../XAMPP/htdocs/Birac mini project/ChoreCompanion/static"
+		},
+		{
+			"path": "../XAMPP/htdocs/Birac mini project/ChoreCompanion/templates"
+		},
+		{
+			"path": "../XAMPP/htdocs/Birac mini project/ChoreCompanion/tests"
+		},
+		{
+			"path": "../XAMPP/htdocs/Birac mini project/ChoreCompanion/uploads"
+		}
+	]
+}

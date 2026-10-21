@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Product Roadmap - IVF Journey Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-5 text-info"><i class="fas fa-map-signs me-2"></i>Product Roadmap</h1>
+
+    <div class="timeline">
+        <div class="row mb-5">
+            <div class="col-md-2 text-center">
+                <div class="badge bg-success p-3 rounded-circle"><i class="fas fa-check fa-2x"></i></div>
+                <h5 class="mt-2">Phase 1</h5>
+                <small class="text-muted">Completed</small>
+            </div>
+            <div class="col-md-10">
+                <div class="card border-success">
+                    <div class="card-body">
+                        <h5 class="card-title">MVP Foundation (Current)</h5>
+                        <p class="card-text">Core system backbone, patient/doctor dashboards, basic tracking, and initial AI integration for chatbot and document analysis.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-2 text-center">
+                <div class="badge bg-primary p-3 rounded-circle"><i class="fas fa-code-branch fa-2x"></i></div>
+                <h5 class="mt-2">Phase 2</h5>
+                <small class="text-muted">Q3 2025</small>
+            </div>
+            <div class="col-md-10">
+                <div class="card border-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">Advanced AI & Integration</h5>
+                        <p class="card-text">Enhanced prediction models using larger datasets, integration with wearable devices (Fitbit/Apple Watch) for real-time wellness tracking, and expanded clinic analytics.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-2 text-center">
+                <div class="badge bg-secondary p-3 rounded-circle"><i class="fas fa-rocket fa-2x"></i></div>
+                <h5 class="mt-2">Phase 3</h5>
+                <small class="text-muted">2026+</small>
+            </div>
+            <div class="col-md-10">
+                <div class="card border-secondary">
+                    <div class="card-body">
+                        <h5 class="card-title">Market Expansion & Telemedicine</h5>
+                        <p class="card-text">Full telemedicine capabilities, video consultations within the app, pharmacy integration for medication delivery, and global market expansion.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}My Treatment - IVF Journey Tracker{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/wellness.style.css') }}">
+<style>
+    .cycle-card {
+        transition: transform 0.2s;
+    }
+    .cycle-card:hover {
+        transform: translateY(-2px);
+    }
+    .status-stimulation { border-left: 4px solid #0d6efd; }
+    .status-retrieval { border-left: 4px solid #dc3545; }
+    .status-transfer { border-left: 4px solid #198754; }
+    .status-wait { border-left: 4px solid #ffc107; }
+    .status-complete { border-left: 4px solid #6c757d; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header bg-gradient-purple text-white rounded p-4" style="background: linear-gradient(135deg, #6f42c1, #0d6efd);">
+                <h1 class="mb-2">
+                    <i class="fas fa-syringe me-3"></i>My IVF Treatment
+                </h1>
+                <p class="mb-0 opacity-90">
+                    Track your IVF cycles, medications, and treatment progress
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Add Treatment Cycle Form -->
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-purple text-white" style="background-color: #6f42c1;">
+                    <h5 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Start New Treatment Cycle
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Protocol Type</label>
+                            <select class="form-select" name="protocol">
+                                <option value="Antagonist">Antagonist Protocol</option>
+                                <option value="Agonist">Agonist Protocol</option>
+                                <option value="Flare">Flare Protocol</option>
+                                <option value="Mini-IVF">Mini-IVF</option>
+                                <option value="Natural">Natural Cycle</option>
+                                <option value="Not Specified">Not Specified</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Start Date *</label>
+                            <input type="date" class="form-control" name="start_date" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" name="patient_notes" rows="3" placeholder="Any notes about this cycle..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-purple w-100" style="background-color: #6f42c1; color: white;">
+                            <i class="fas fa-plus me-2"></i>Start Cycle
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Quick Info -->
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Treatment Stages
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><span class="badge bg-primary me-2">1</span> Stimulation - Ovarian stimulation with medications</li>
+                        <li class="mb-2"><span class="badge bg-danger me-2">2</span> Retrieval - Egg retrieval procedure</li>
+                        <li class="mb-2"><span class="badge bg-success me-2">3</span> Transfer - Embryo transfer</li>
+                        <li class="mb-2"><span class="badge bg-warning me-2">4</span> Wait - Two week wait for pregnancy test</li>
+                        <li><span class="badge bg-secondary me-2">5</span> Complete - Cycle completed</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Treatment Cycles List -->
+        <div class="col-lg-8">
+            <!-- Current/Active Cycles -->
+            {% set active_cycles = cycles|selectattr('status', 'in', ['stimulation', 'retrieval', 'transfer', 'wait'])|list %}
+            {% if active_cycles %}
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-spinner me-2"></i>Active Treatment Cycle
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for cycle in active_cycles %}
+                    <div class="card cycle-card mb-3 status-{{ cycle.status }}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="card-title">{{ cycle.protocol }} Protocol</h5>
+                                    <p class="mb-1">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        Started: {{ cycle.start_date.strftime('%B %d, %Y') }}
+                                    </p>
+                                    <p class="mb-2">
+                                        <span class="badge bg-{{ 'primary' if cycle.status == 'stimulation' else 'danger' if cycle.status == 'retrieval' else 'success' if cycle.status == 'transfer' else 'warning' }}">
+                                            {{ cycle.status|title }}
+                                        </span>
+                                    </p>
+                                    {% if cycle.patient_notes %}
+                                    <p class="text-muted small">{{ cycle.patient_notes }}</p>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <!-- Status Update Form -->
+                                    <form method="POST" action="{{ url_for('update_cycle_status', cycle_id=cycle.id) }}" class="d-inline">
+                                        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                            <option value="stimulation" {% if cycle.status == 'stimulation' %}selected{% endif %}>Stimulation</option>
+                                            <option value="retrieval" {% if cycle.status == 'retrieval' %}selected{% endif %}>Retrieval</option>
+                                            <option value="transfer" {% if cycle.status == 'transfer' %}selected{% endif %}>Transfer</option>
+                                            <option value="wait" {% if cycle.status == 'wait' %}selected{% endif %}>Wait</option>
+                                            <option value="complete" {% if cycle.status == 'complete' %}selected{% endif %}>Complete</option>
+                                        </select>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Past Cycles -->
+            {% set past_cycles = cycles|selectattr('status', 'equalto', 'complete')|list %}
+            {% if past_cycles %}
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>Past Treatment Cycles
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for cycle in past_cycles %}
+                    <div class="card cycle-card mb-3 status-complete">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="card-title">{{ cycle.protocol }} Protocol</h5>
+                                    <p class="mb-1">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        {{ cycle.start_date.strftime('%B %d, %Y') }}
+                                    </p>
+                                    {% if cycle.outcome %}
+                                    <p class="mb-2">
+                                        <span class="badge bg-{{ 'success' if cycle.outcome == 'BFP' else 'danger' if cycle.outcome == 'BFN' else 'warning' }}">
+                                            {{ cycle.outcome }}
+                                        </span>
+                                    </p>
+                                    {% endif %}
+                                    {% if cycle.patient_notes %}
+                                    <p class="text-muted small">{{ cycle.patient_notes }}</p>
+                                    {% endif %}
+                                </div>
+                                <span class="text-muted small">Completed</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if not cycles %}
+            <div class="card">
+                <div class="card-body text-center text-muted py-5">
+                    <i class="fas fa-flask fa-3x mb-3"></i>
+                    <h5>No treatment cycles yet</h5>
+                    <p>Start your first IVF treatment cycle to begin tracking your progress!</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

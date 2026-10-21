@@ -1,0 +1,494 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhseINkfSgoIHPqNkRHE2pRESqmAudayI1AI=" crossorigin=""/>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/faq.style.css') }}">
+{% endblock %}
+
+{% block title %}FAQ - IVF Journey Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header bg-gradient-info text-white rounded p-4">
+                <h1 class="mb-2">
+                    <i class="fas fa-question-circle me-3"></i>Frequently Asked Questions
+                </h1>
+                <p class="mb-0 opacity-90">
+                    Get answers to common questions about IVF treatment and our AI-powered tracking system
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- FAQ Categories -->
+        <div class="col-lg-3 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">FAQ Categories</h6>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="#general" class="list-group-item list-group-item-action" data-bs-smooth-scroll>
+                        <i class="fas fa-info-circle me-2"></i>General IVF
+                    </a>
+                    <a href="#ai-features" class="list-group-item list-group-item-action" data-bs-smooth-scroll>
+                        <i class="fas fa-robot me-2"></i>AI Features
+                    </a>
+                    <a href="#treatment" class="list-group-item list-group-item-action" data-bs-smooth-scroll>
+                        <i class="fas fa-syringe me-2"></i>Treatment Process
+                    </a>
+                    <a href="#wellness" class="list-group-item list-group-item-action" data-bs-smooth-scroll>
+                        <i class="fas fa-leaf me-2"></i>Wellness & Nutrition
+                    </a>
+                    <a href="#technical" class="list-group-item list-group-item-action" data-bs-smooth-scroll>
+                        <i class="fas fa-cog me-2"></i>Technical Support
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Content -->
+        <div class="col-lg-9">
+            <!-- General IVF Questions -->
+            <section id="general" class="mb-5">
+                <h3 class="mb-4 text-primary">
+                    <i class="fas fa-info-circle me-2"></i>General IVF Questions
+                </h3>
+                
+                <div class="accordion" id="generalAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#general1">
+                                What is IVF and how does it work?
+                            </button>
+                        </h2>
+                        <div id="general1" class="accordion-collapse collapse show" data-bs-parent="#generalAccordion">
+                            <div class="accordion-body">
+                                <p>In Vitro Fertilization (IVF) is a fertility treatment where eggs are retrieved from a woman's ovaries and fertilized with sperm in a laboratory. The process typically involves:</p>
+                                <ul>
+                                    <li><strong>Ovarian Stimulation:</strong> Medications to stimulate egg production</li>
+                                    <li><strong>Egg Retrieval:</strong> Minor surgical procedure to collect eggs</li>
+                                    <li><strong>Fertilization:</strong> Eggs and sperm are combined in the lab</li>
+                                    <li><strong>Embryo Culture:</strong> Embryos develop for 3-5 days</li>
+                                    <li><strong>Embryo Transfer:</strong> One or more embryos are placed in the uterus</li>
+                                    <li><strong>Pregnancy Test:</strong> Blood test 10-14 days after transfer</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#general2">
+                                What are the success rates for IVF?
+                            </button>
+                        </h2>
+                        <div id="general2" class="accordion-collapse collapse" data-bs-parent="#generalAccordion">
+                            <div class="accordion-body">
+                                <p>IVF success rates vary significantly based on several factors:</p>
+                                <ul>
+                                    <li><strong>Age:</strong> Women under 35 have the highest success rates (40-50%)</li>
+                                    <li><strong>Diagnosis:</strong> Unexplained infertility typically has better outcomes</li>
+                                    <li><strong>Clinic Quality:</strong> Experienced clinics often have higher success rates</li>
+                                    <li><strong>Previous Cycles:</strong> Success rates may decrease with multiple attempts</li>
+                                </ul>
+                                <p>Our AI prediction system provides personalized success rates based on your unique medical profile.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#general3">
+                                How long does an IVF cycle take?
+                            </button>
+                        </h2>
+                        <div id="general3" class="accordion-collapse collapse" data-bs-parent="#generalAccordion">
+                            <div class="accordion-body">
+                                <p>A typical IVF cycle takes approximately 6-8 weeks from start to pregnancy test:</p>
+                                <ul>
+                                    <li><strong>Pre-cycle preparation:</strong> 2-4 weeks</li>
+                                    <li><strong>Stimulation phase:</strong> 8-14 days</li>
+                                    <li><strong>Egg retrieval to transfer:</strong> 3-6 days</li>
+                                    <li><strong>Two-week wait:</strong> 10-14 days until pregnancy test</li>
+                                </ul>
+                                <p>Our tracking system helps you monitor each phase and stay on schedule.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Features Questions -->
+            <section id="ai-features" class="mb-5">
+                <h3 class="mb-4 text-success">
+                    <i class="fas fa-robot me-2"></i>AI Features
+                </h3>
+                
+                <div class="accordion" id="aiAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ai1">
+                                How accurate are the AI predictions?
+                            </button>
+                        </h2>
+                        <div id="ai1" class="accordion-collapse collapse" data-bs-parent="#aiAccordion">
+                            <div class="accordion-body">
+                                <p>Our AI prediction system achieves up to 95% accuracy by analyzing:</p>
+                                <ul>
+                                    <li>Your age, BMI, and hormone levels</li>
+                                    <li>Medical history and previous treatments</li>
+                                    <li>Partner factors and lifestyle choices</li>
+                                    <li>Latest clinical research data from 2024-2025</li>
+                                </ul>
+                                <p><strong>Important:</strong> AI predictions are statistical estimates. Individual results may vary, and you should always consult with your healthcare provider for medical decisions.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ai2">
+                                What is the AI Embryo Quality Predictor?
+                            </button>
+                        </h2>
+                        <div id="ai2" class="accordion-collapse collapse" data-bs-parent="#aiAccordion">
+                            <div class="accordion-body">
+                                <p>This revolutionary feature, based on 2024-2025 research, predicts embryo quality using:</p>
+                                <ul>
+                                    <li><strong>Age Factor Analysis:</strong> Maternal age impact on egg quality</li>
+                                    <li><strong>Hormone Level Assessment:</strong> AMH, FSH, and other fertility markers</li>
+                                    <li><strong>Lifestyle Impact:</strong> Smoking, exercise, nutrition effects</li>
+                                    <li><strong>Development Probability:</strong> Likelihood of reaching blastocyst stage</li>
+                                    <li><strong>Implantation Potential:</strong> Chances of successful implantation</li>
+                                </ul>
+                                <p>This feature is unique to our platform and not available in other patient applications.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ai3">
+                                How does the Personalized Protocol Advisor work?
+                            </button>
+                        </h2>
+                        <div id="ai3" class="accordion-collapse collapse" data-bs-parent="#aiAccordion">
+                            <div class="accordion-body">
+                                <p>Our AI analyzes your unique profile to recommend optimal treatment protocols:</p>
+                                <ul>
+                                    <li><strong>Protocol Selection:</strong> Long, short, or antagonist protocols</li>
+                                    <li><strong>Medication Dosing:</strong> Personalized FSH and LH recommendations</li>
+                                    <li><strong>Timing Optimization:</strong> Ideal cycle timing based on your patterns</li>
+                                    <li><strong>Success Optimization:</strong> Lifestyle modifications for better outcomes</li>
+                                </ul>
+                                <p>This feature represents cutting-edge research in personalized reproductive medicine.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Treatment Process Questions -->
+            <section id="treatment" class="mb-5">
+                <h3 class="mb-4 text-warning">
+                    <i class="fas fa-syringe me-2"></i>Treatment Process
+                </h3>
+                
+                <div class="accordion" id="treatmentAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#treatment1">
+                                What medications are used in IVF?
+                            </button>
+                        </h2>
+                        <div id="treatment1" class="accordion-collapse collapse" data-bs-parent="#treatmentAccordion">
+                            <div class="accordion-body">
+                                <p>Common IVF medications include:</p>
+                                <ul>
+                                    <li><strong>FSH (Follitropin):</strong> Stimulates follicle growth</li>
+                                    <li><strong>LH (Lutropin):</strong> Supports follicle maturation</li>
+                                    <li><strong>GnRH Agonists/Antagonists:</strong> Prevent premature ovulation</li>
+                                    <li><strong>hCG Trigger Shot:</strong> Triggers final egg maturation</li>
+                                    <li><strong>Progesterone:</strong> Supports implantation and early pregnancy</li>
+                                </ul>
+                                <p>Our medication tracker helps you stay on schedule with proper dosing and timing.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#treatment2">
+                                What are the side effects of IVF medications?
+                            </button>
+                        </h2>
+                        <div id="treatment2" class="accordion-collapse collapse" data-bs-parent="#treatmentAccordion">
+                            <div class="accordion-body">
+                                <p>Common side effects may include:</p>
+                                <ul>
+                                    <li>Mood swings and emotional changes</li>
+                                    <li>Hot flashes and night sweats</li>
+                                    <li>Bloating and abdominal discomfort</li>
+                                    <li>Headaches and fatigue</li>
+                                    <li>Injection site reactions</li>
+                                </ul>
+                                <p>Our wellness tracker helps you monitor symptoms and provides coping strategies. Always report severe symptoms to your healthcare provider.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#treatment3">
+                                How can I improve my chances of IVF success?
+                            </button>
+                        </h2>
+                        <div id="treatment3" class="accordion-collapse collapse" data-bs-parent="#treatmentAccordion">
+                            <div class="accordion-body">
+                                <p>Evidence-based ways to improve IVF outcomes:</p>
+                                <ul>
+                                    <li><strong>Optimize weight:</strong> Maintain healthy BMI (18.5-24.9)</li>
+                                    <li><strong>Quit smoking:</strong> Smoking significantly reduces success rates</li>
+                                    <li><strong>Limit alcohol:</strong> Avoid alcohol during treatment</li>
+                                    <li><strong>Take supplements:</strong> Folic acid, prenatal vitamins</li>
+                                    <li><strong>Manage stress:</strong> Practice relaxation techniques</li>
+                                    <li><strong>Get adequate sleep:</strong> 7-9 hours nightly</li>
+                                    <li><strong>Exercise moderately:</strong> Gentle movement, avoid intense workouts</li>
+                                </ul>
+                                <p>Our nutrition and wellness guidance provides personalized recommendations.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Wellness & Nutrition Questions -->
+            <section id="wellness" class="mb-5">
+                <h3 class="mb-4 text-info">
+                    <i class="fas fa-leaf me-2"></i>Wellness & Nutrition
+                </h3>
+                
+                <div class="accordion" id="wellnessAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#wellness1">
+                                What foods should I eat during IVF treatment?
+                            </button>
+                        </h2>
+                        <div id="wellness1" class="accordion-collapse collapse" data-bs-parent="#wellnessAccordion">
+                            <div class="accordion-body">
+                                <p>Focus on fertility-supporting foods:</p>
+                                <ul>
+                                    <li><strong>Protein sources:</strong> Lean meats, fish, eggs, legumes</li>
+                                    <li><strong>Whole grains:</strong> Quinoa, brown rice, oats</li>
+                                    <li><strong>Healthy fats:</strong> Avocados, nuts, olive oil, fatty fish</li>
+                                    <li><strong>Fruits and vegetables:</strong> Variety of colors for antioxidants</li>
+                                    <li><strong>Dairy or alternatives:</strong> Calcium-rich foods</li>
+                                </ul>
+                                <p>Our AI nutrition planner creates personalized meal plans based on your specific needs and preferences.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#wellness2">
+                                Can I exercise during IVF treatment?
+                            </button>
+                        </h2>
+                        <div id="wellness2" class="accordion-collapse collapse" data-bs-parent="#wellnessAccordion">
+                            <div class="accordion-body">
+                                <p>Yes, but with modifications:</p>
+                                <ul>
+                                    <li><strong>Gentle activities:</strong> Walking, swimming, prenatal yoga</li>
+                                    <li><strong>Avoid high-impact:</strong> Running, jumping, heavy lifting</li>
+                                    <li><strong>Listen to your body:</strong> Stop if you feel uncomfortable</li>
+                                    <li><strong>Post-transfer care:</strong> Very gentle movement only</li>
+                                </ul>
+                                <p>Our yoga routines are specifically designed for IVF patients and include safety precautions for each treatment phase.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#wellness3">
+                                How important is stress management during IVF?
+                            </button>
+                        </h2>
+                        <div id="wellness3" class="accordion-collapse collapse" data-bs-parent="#wellnessAccordion">
+                            <div class="accordion-body">
+                                <p>Stress management is crucial for IVF success:</p>
+                                <ul>
+                                    <li><strong>Hormone impact:</strong> High stress can affect hormone balance</li>
+                                    <li><strong>Sleep quality:</strong> Stress disrupts restorative sleep</li>
+                                    <li><strong>Treatment adherence:</strong> Stress makes medication schedules harder</li>
+                                    <li><strong>Overall wellbeing:</strong> Mental health affects physical health</li>
+                                </ul>
+                                <p>Effective stress management techniques:</p>
+                                <ul>
+                                    <li>Mindfulness meditation and deep breathing</li>
+                                    <li>Gentle yoga and progressive muscle relaxation</li>
+                                    <li>Support groups and counseling</li>
+                                    <li>Regular sleep schedule and relaxing bedtime routine</li>
+                                </ul>
+                                <p>Our wellness tracker helps you monitor stress levels and provides personalized coping strategies.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Technical Support Questions -->
+            <section id="technical" class="mb-5">
+                <h3 class="mb-4 text-secondary">
+                    <i class="fas fa-cog me-2"></i>Technical Support
+                </h3>
+                
+                <div class="accordion" id="technicalAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#tech1">
+                                How do I use the AI chatbot?
+                            </button>
+                        </h2>
+                        <div id="tech1" class="accordion-collapse collapse" data-bs-parent="#technicalAccordion">
+                            <div class="accordion-body">
+                                <p>The AI chatbot is available 24/7 to answer your IVF questions:</p>
+                                <ul>
+                                    <li><strong>Access:</strong> Click the chat widget in the bottom right corner</li>
+                                    <li><strong>Ask questions:</strong> Type naturally about IVF, medications, symptoms</li>
+                                    <li><strong>Get instant help:</strong> Immediate responses based on medical knowledge</li>
+                                    <li><strong>Personalized responses:</strong> AI knows your medical profile</li>
+                                </ul>
+                                <p>The chatbot can help with medication timing, symptom interpretation, and general IVF information, but always consult your doctor for medical decisions.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#tech2">
+                                How do I upload medical documents?
+                            </button>
+                        </h2>
+                        <div id="tech2" class="accordion-collapse collapse" data-bs-parent="#technicalAccordion">
+                            <div class="accordion-body">
+                                <p>Uploading medical documents is simple:</p>
+                                <ol>
+                                    <li>Go to your patient dashboard</li>
+                                    <li>Click "Upload Medical Document" button</li>
+                                    <li>Select your file (PDF, DOC, DOCX, JPG, PNG supported)</li>
+                                    <li>Add a description of the document</li>
+                                    <li>Click "Upload" to save securely</li>
+                                </ol>
+                                <p>Your documents are encrypted and stored securely. You can view them anytime from your dashboard.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#tech3">
+                                Is my medical data secure?
+                            </button>
+                        </h2>
+                        <div id="tech3" class="accordion-collapse collapse" data-bs-parent="#technicalAccordion">
+                            <div class="accordion-body">
+                                <p>We take data security seriously:</p>
+                                <ul>
+                                    <li><strong>Encryption:</strong> All data encrypted in transit and at rest</li>
+                                    <li><strong>HIPAA Compliance:</strong> Following healthcare privacy regulations</li>
+                                    <li><strong>Secure Access:</strong> Multi-factor authentication available</li>
+                                    <li><strong>Limited Access:</strong> Only you and your healthcare team can view your data</li>
+                                    <li><strong>Regular Backups:</strong> Your data is safely backed up</li>
+                                </ul>
+                                <p>We never share your personal medical information with third parties without your explicit consent.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Support -->
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Still Have Questions?</h5>
+                    <p class="card-text">Our support team is here to help you navigate your IVF journey.</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <button class="btn btn-primary" onclick="openChatbotPopup()">
+                            <i class="fas fa-comments me-2"></i>Chat with AI Assistant
+                        </button>
+                        <a href="mailto:support@ivftracker.com" class="btn btn-outline-primary">
+                            <i class="fas fa-envelope me-2"></i>Email Support
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Smooth scrolling for FAQ navigation
+document.querySelectorAll('a[data-bs-smooth-scroll]').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+// Search functionality
+function searchFAQ() {
+    // This would implement FAQ search functionality
+    // For now, it's a placeholder
+    alert('Search functionality would be implemented here');
+}
+
+// Highlight active FAQ category
+window.addEventListener('scroll', function() {
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('a[data-bs-smooth-scroll]');
+    
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollY >= sectionTop - 100) {
+            current = section.getAttribute('id');
+        }
+    });
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>
+{% endblock %}

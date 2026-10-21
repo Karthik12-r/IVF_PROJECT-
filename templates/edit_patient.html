@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.style.css') }}">
+{% endblock %}
+
+{% block title %}Edit Patient - IVF Journey Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="mb-2">
+                        <i class="fas fa-edit me-2"></i>Edit Patient Information
+                    </h1>
+                    <p class="mb-0 text-muted">{{ patient.first_name }} {{ patient.last_name }} (ID: {{ patient.id }})</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('patient_details', patient_id=patient.id) }}" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Details
+                    </a>
+                    <a href="{{ url_for('doctor_dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home me-1"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Form -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-edit me-2"></i>Patient Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <!-- Personal Information -->
+                        <h6 class="mb-3">Personal Information</h6>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="first_name" class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ patient.first_name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="last_name" class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ patient.last_name }}" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ patient.phone or '' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="date_of_birth" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ patient.date_of_birth.strftime('%Y-%m-%d') if patient.date_of_birth else '' }}">
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Medical Information -->
+                        <h6 class="mb-3">Medical Information</h6>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="age" class="form-label">Age</label>
+                                <input type="number" class="form-control" id="age" name="age" value="{{ patient_data.age if patient_data and patient_data.age else '' }}" min="1" max="100">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="height" class="form-label">Height (cm)</label>
+                                <input type="number" class="form-control" id="height" name="height" value="{{ patient_data.height if patient_data and patient_data.height else '' }}" step="0.1" min="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="weight" class="form-label">Weight (kg)</label>
+                                <input type="number" class="form-control" id="weight" name="weight" value="{{ patient_data.weight if patient_data and patient_data.weight else '' }}" step="0.1" min="0">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="amh_level" class="form-label">AMH Level (ng/mL)</label>
+                                <input type="number" class="form-control" id="amh_level" name="amh_level" value="{{ patient_data.amh_level if patient_data and patient_data.amh_level else '' }}" step="0.01" min="0">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="fsh_level" class="form-label">FSH Level (mIU/mL)</label>
+                                <input type="number" class="form-control" id="fsh_level" name="fsh_level" value="{{ patient_data.fsh_level if patient_data and patient_data.fsh_level else '' }}" step="0.01" min="0">
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Medical History -->
+                        <h6 class="mb-3">Medical History</h6>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="previous_pregnancies" class="form-label">Previous Pregnancies</label>
+                                <input type="number" class="form-control" id="previous_pregnancies" name="previous_pregnancies" value="{{ patient_data.previous_pregnancies if patient_data and patient_data.previous_pregnancies else 0 }}" min="0">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="previous_ivf_cycles" class="form-label">Previous IVF Cycles</label>
+                                <input type="number" class="form-control" id="previous_ivf_cycles" name="previous_ivf_cycles" value="{{ patient_data.previous_ivf_cycles if patient_data and patient_data.previous_ivf_cycles else 0 }}" min="0">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="partner_age" class="form-label">Partner Age</label>
+                                <input type="number" class="form-control" id="partner_age" name="partner_age" value="{{ patient_data.partner_age if patient_data and patient_data.partner_age else '' }}" min="1" max="100">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="partner_diagnosis" class="form-label">Partner Diagnosis</label>
+                                <input type="text" class="form-control" id="partner_diagnosis" name="partner_diagnosis" value="{{ patient_data.partner_diagnosis if patient_data and patient_data.partner_diagnosis else '' }}">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="diagnosis" class="form-label">Patient Diagnosis</label>
+                            <textarea class="form-control" id="diagnosis" name="diagnosis" rows="2">{{ patient_data.diagnosis if patient_data and patient_data.diagnosis else '' }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="medical_history" class="form-label">Medical History</label>
+                            <textarea class="form-control" id="medical_history" name="medical_history" rows="3">{{ patient_data.medical_history if patient_data and patient_data.medical_history else '' }}</textarea>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Medications and Lifestyle -->
+                        <h6 class="mb-3">Medications & Lifestyle</h6>
+                        <div class="mb-3">
+                            <label for="medications" class="form-label">Current Medications</label>
+                            <textarea class="form-control" id="medications" name="medications" rows="2">{{ patient_data.medications if patient_data and patient_data.medications else '' }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="allergies" class="form-label">Allergies</label>
+                            <textarea class="form-control" id="allergies" name="allergies" rows="2">{{ patient_data.allergies if patient_data and patient_data.allergies else '' }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="lifestyle_factors" class="form-label">Lifestyle Factors</label>
+                            <textarea class="form-control" id="lifestyle_factors" name="lifestyle_factors" rows="3">{{ patient_data.lifestyle_factors if patient_data and patient_data.lifestyle_factors else '' }}</textarea>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex justify-content-end">
+                            <a href="{{ url_for('patient_details', patient_id=patient.id) }}" class="btn btn-secondary me-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Current Information Summary -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Current Information
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <strong>Name:</strong> {{ patient.first_name }} {{ patient.last_name }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Email:</strong> {{ patient.email }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Phone:</strong> {{ patient.phone or 'Not provided' }}
+                    </div>
+                    {% if patient_data %}
+                        <div class="mb-2">
+                            <strong>Age:</strong> {{ patient_data.age or 'Not provided' }}
+                        </div>
+                        <div class="mb-2">
+                            <strong>BMI:</strong> {{ "%.1f"|format(patient_data.bmi) if patient_data.bmi else 'Not calculated' }}
+                        </div>
+                        <div class="mb-2">
+                            <strong>AMH:</strong> {{ "%.1f"|format(patient_data.amh_level) if patient_data.amh_level else 'Not provided' }} ng/mL
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('create_cycle') }}" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-plus-circle me-1"></i>Create New Cycle
+                        </a>
+                        <a href="{{ url_for('schedule_appointment') }}" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-calendar-plus me-1"></i>Schedule Appointment
+                        </a>
+                        <button class="btn btn-outline-warning btn-sm" onclick="generateAIRecommendations({{ patient.id }})">
+                            <i class="fas fa-robot me-1"></i>AI Recommendations
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function generateAIRecommendations(patientId) {
+    // Show loading state
+    const button = event.target.closest('button');
+    const originalContent = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    button.disabled = true;
+
+    // Simulate AI analysis
+    setTimeout(() => {
+        alert(`AI Analysis Complete for Patient #${patientId}:\n\n` +
+              `• Protocol Optimization: Consider adjusting FSH dose\n` +
+              `• Success Prediction: 68.5% based on current parameters\n` +
+              `• Wellness Correlation: Stress levels may impact cycle outcome\n` +
+              `• Recommendation: Schedule additional monitoring`);
+
+        // Reset button
+        button.innerHTML = originalContent;
+        button.disabled = false;
+    }, 2000);
+}
+</script>
+{% endblock %}

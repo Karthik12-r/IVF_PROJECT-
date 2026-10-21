@@ -1,0 +1,40 @@
+<form id="prediction-form" novalidate>
+    <input type="hidden" id="source_document_id" value="{{ latest_report.id if latest_report else '' }}">
+    <div class="row">
+        {% set fields = [
+            ('Age', 'Age', 'years', '1', '1'),
+            ('BMI', 'BMI (Body Mass Index)', '', '0.1', '0'),
+            ('AMH', 'AMH Level', 'ng/mL', 'any', '0'),
+            ('FSH', 'FSH Level', 'mIU/mL', 'any', '0'),
+            ('Previous_IVF_Attempts', 'Previous IVF Attempts', '', '1', '0'),
+            ('Stress_Level', 'Stress Level (1–5)', '', '1', '1'),
+            ('Sleep_Hours', 'Average Sleep', 'hours', '0.1', '0'),
+            ('Exercise_Min_per_Day', 'Average Exercise', 'minutes/day', '1', '0')
+        ] %}
+        {% for field_id, label, unit, step, minimum in fields %}
+        <div class="col-md-6 mb-3">
+            <label for="{{ field_id }}" class="form-label">{{ label }}{% if unit %} ({{ unit }}){% endif %}</label>
+            <input type="number" class="form-control ai-feature-input" id="{{ field_id }}"
+                   value="{{ dashboard_values.get(field_id, '') if dashboard_values.get(field_id) is not none else '' }}"
+                   step="{{ step }}" min="{{ minimum }}"{% if field_id == 'Stress_Level' %} max="5"{% endif %} required>
+            {% set provenance = feature_sources.get(field_id, {}) %}
+            <small class="text-muted d-block" id="source-{{ field_id }}">
+                {% if provenance.get('document') %}
+                    {{ provenance.get('source') }}: {{ provenance.get('document') }}
+                    {% if provenance.get('report_date') %} · Report date {{ provenance.get('report_date') }}{% endif %}
+                    {% if provenance.get('confidence') is not none %} · OCR confidence {{ (provenance.get('confidence') * 100)|round|int }}%{% endif %}
+                    {% if provenance.get('user_edited') %} · User Edited{% endif %}
+                {% else %}{{ provenance.get('source', 'Missing') }}{% endif %}
+            </small>
+        </div>
+        {% endfor %}
+    </div>
+    <div id="prediction-input-status" class="small text-muted mb-2">
+        {% if missing_prediction_fields %}
+            Prediction requires additional validated information: {{ missing_prediction_fields|join(', ') }}.
+        {% else %}All eight required values are available. Review them before continuing.{% endif %}
+    </div>
+    <button type="submit" id="predict-btn" class="btn btn-primary w-100 mt-2">
+        <i class="fas fa-cogs me-2"></i>Run ML Prediction
+    </button>
+</form>

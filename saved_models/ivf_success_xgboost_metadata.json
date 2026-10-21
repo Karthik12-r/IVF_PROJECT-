@@ -1,0 +1,90 @@
+{
+  "model_name": "ivf_success_xgboost",
+  "model_type": "xgboost_classifier",
+  "feature_names": [
+    "age",
+    "bmi",
+    "amh",
+    "fsh",
+    "previous_ivf",
+    "stress",
+    "sleep_hours",
+    "exercise_min"
+  ],
+  "metrics": {
+    "validation_accuracy": 0.8973333333333333,
+    "validation_roc_auc": 0.9549254540525889,
+    "validation_classification_report": {
+      "0": {
+        "precision": 0.7532467532467533,
+        "recall": 0.7483870967741936,
+        "f1-score": 0.7508090614886731,
+        "support": 155.0
+      },
+      "1": {
+        "precision": 0.9345637583892618,
+        "recall": 0.9361344537815126,
+        "f1-score": 0.9353484466834593,
+        "support": 595.0
+      },
+      "accuracy": 0.8973333333333333,
+      "macro avg": {
+        "precision": 0.8439052558180076,
+        "recall": 0.842260775277853,
+        "f1-score": 0.8430787540860663,
+        "support": 750.0
+      },
+      "weighted avg": {
+        "precision": 0.8970915773264767,
+        "recall": 0.8973333333333333,
+        "f1-score": 0.8972103070765367,
+        "support": 750.0
+      }
+    },
+    "test_accuracy": 0.8893333333333333,
+    "test_roc_auc": 0.950729194903768,
+    "test_classification_report": {
+      "0": {
+        "precision": 0.7432432432432432,
+        "recall": 0.7096774193548387,
+        "f1-score": 0.7260726072607261,
+        "support": 155.0
+      },
+      "1": {
+        "precision": 0.925249169435216,
+        "recall": 0.9361344537815126,
+        "f1-score": 0.9306599832915622,
+        "support": 595.0
+      },
+      "accuracy": 0.8893333333333333,
+      "macro avg": {
+        "precision": 0.8342462063392295,
+        "recall": 0.8229059365681757,
+        "f1-score": 0.8283662952761441,
+        "support": 750.0
+      },
+      "weighted avg": {
+        "precision": 0.8876346113555416,
+        "recall": 0.8893333333333333,
+        "f1-score": 0.8883785922451894,
+        "support": 750.0
+      }
+    },
+    "feature_importance": {
+      "age": 0.41174912452697754,
+      "bmi": 0.1030530110001564,
+      "amh": 0.15758295357227325,
+      "fsh": 0.11946981400251389,
+      "previous_ivf": 0.048589788377285004,
+      "stress": 0.04802665114402771,
+      "sleep_hours": 0.058145273476839066,
+      "exercise_min": 0.05338337644934654
+    }
+  },
+  "dataset_split": {
+    "training": 0.7,
+    "validation": 0.15,
+    "testing": 0.15
+  },
+  "version": "2.0.0"
+}

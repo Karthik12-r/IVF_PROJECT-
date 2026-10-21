@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Partner Medications{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0"><i class="fas fa-pills me-2"></i>Medication Support</h2>
+        <a href="{{ url_for('partner_dashboard') }}" class="btn btn-outline-secondary btn-sm">Back to dashboard</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            {% if reminders %}
+                {% for reminder in reminders %}
+                <div class="border rounded p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>{{ reminder.medication_name or 'Medication reminder' }}</strong>
+                        <span class="badge bg-success">{{ 'Active' if reminder.is_active else 'Inactive' }}</span>
+                    </div>
+                    <p class="mb-1 mt-2">Time: {{ reminder.time_of_day or 'Not set' }}</p>
+                    <p class="mb-0">Instructions: {{ reminder.instructions or 'No instructions provided.' }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-light border mb-0">No medication details are currently shared.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

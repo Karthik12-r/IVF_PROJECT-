@@ -1,0 +1,18 @@
+{
+    "feature_order": [
+        "age",
+        "bmi",
+        "amh",
+        "fsh",
+        "previous_ivf",
+        "stress",
+        "sleep_hours",
+        "exercise_min"
+    ],
+    "model": "RandomForestClassifier",
+    "accuracy": 0.737,
+    "training_records": 5000,
+    "training_date": "2024-02-16",
+    "n_estimators": 200,
+    "note": "Trained on 5000 synthetic IVF records"
+}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Document Analysis - IVF Journey Tracker{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="fas fa-search me-2 text-primary"></i>Document Analysis</h1>
+                <a href="{{ url_for('my_documents') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Documents
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-{{ 'pdf' if document.file_type == 'application/pdf' else 'image' if document.file_type.startswith('image/') else 'alt' }} me-2"></i>
+                        {{ document.original_filename }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Description:</strong> {{ document.description or 'No description' }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Uploaded:</strong> {{ document.uploaded_at.strftime('%B %d, %Y at %I:%M %p') }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Extracted Text:</strong>
+                        <div class="mt-2">
+                            <textarea class="form-control" rows="15" readonly style="font-family: monospace; font-size: 0.9em;">{{ extracted_text }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('download_document', doc_id=document.id) }}" class="btn btn-primary">
+                            <i class="fas fa-download me-1"></i>Download Original
+                        </a>
+                        <button onclick="copyToClipboard()" class="btn btn-outline-secondary">
+                            <i class="fas fa-copy me-1"></i>Copy Text
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard() {
+    const textarea = document.querySelector('textarea');
+    textarea.select();
+    document.execCommand('copy');
+
+    // Show feedback
+    const button = event.target.closest('button');
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+    button.classList.remove('btn-outline-secondary');
+    button.classList.add('btn-success');
+
+    setTimeout(() => {
+        button.innerHTML = originalText;
+        button.classList.remove('btn-success');
+        button.classList.add('btn-outline-secondary');
+    }, 2000);
+}
+</script>
+{% endblock %}

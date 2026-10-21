@@ -1,0 +1,9 @@
+Feature,Method,Lower Bound,Upper Bound,Outlier Count,Outlier %,Status
+age,IQR (1.5 × IQR),10.0,58.0,0,0.0,PASS
+bmi,IQR (1.5 × IQR),9.599999999999996,43.2,0,0.0,PASS
+amh,IQR (1.5 × IQR),-2.6749999999999994,8.965,0,0.0,PASS
+fsh,IQR (1.5 × IQR),-4.516249999999999,25.17375,0,0.0,PASS
+previous_ivf,IQR (1.5 × IQR),-3.5,8.5,0,0.0,PASS
+stress,IQR (1.5 × IQR),-1.0,7.0,0,0.0,PASS
+sleep_hours,IQR (1.5 × IQR),1.3000000000000007,11.7,0,0.0,PASS
+exercise_min,IQR (1.5 × IQR),-30.0,90.0,0,0.0,PASS

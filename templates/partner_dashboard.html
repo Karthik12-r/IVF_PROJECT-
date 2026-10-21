@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Partner Dashboard - IVF Journey Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="fas fa-heart text-danger me-2"></i>Partner Sync</h2>
+            <p class="text-muted mb-0">Patient: {{ patient.first_name }} {{ patient.last_name }} | Connection: <span class="badge bg-success">Connected</span></p>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            <span class="badge bg-light text-dark"><i class="fas fa-bell me-1"></i>{{ notifications|length }} updates</span>
+            <a href="{{ url_for('partner_profile') }}" class="btn btn-outline-primary btn-sm">Profile</a>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted small">IVF Progress</span>
+                        <i class="fas fa-chart-line text-primary"></i>
+                    </div>
+                    <h3 class="mb-1">{{ ((latest_prediction.success_probability * 100) if latest_prediction else 62) | round(0) }}%</h3>
+                    <p class="mb-0 text-muted">Treatment progress</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted small">Current Stage</span>
+                        <i class="fas fa-flask text-success"></i>
+                    </div>
+                    <h5 class="mb-1">{{ latest_cycle.protocol if latest_cycle else 'Cycle in progress' }}</h5>
+                    <p class="mb-0 text-muted">Shared journey</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted small">Shared Tasks</span>
+                        <i class="fas fa-tasks text-warning"></i>
+                    </div>
+                    <h3 class="mb-1">{{ pending_tasks }}</h3>
+                    <p class="mb-0 text-muted">Pending</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted small">Reminders</span>
+                        <i class="fas fa-bell text-info"></i>
+                    </div>
+                    <h3 class="mb-1">{{ reminders }}</h3>
+                    <p class="mb-0 text-muted">Shared reminders</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0"><i class="fas fa-route me-2"></i>IVF Journey Timeline</h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        {% set stages = ['Registration / Consultation', 'Initial Tests', 'Ovarian Stimulation', 'Follicular Monitoring', 'Egg Retrieval', 'Fertilization', 'Embryo Development', 'Embryo Transfer', 'Pregnancy Test'] %}
+                        {% for stage in stages %}
+                        <div class="timeline-item {% if loop.index == 7 %}current{% endif %}">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <h6>{{ stage }}</h6>
+                                <span class="badge bg-success mb-2">Completed</span>
+                                <small class="text-muted d-block">Progress stage</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0"><i class="fas fa-list-check me-2"></i>Shared Tasks</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{{ url_for('partner_tasks') }}" class="btn btn-primary btn-sm mb-3">View Tasks</a>
+                    <div class="list-group">
+                        {% for task in [] %}
+                        <div class="list-group-item">{{ task.title }}</div>
+                        {% else %}
+                        <div class="list-group-item text-muted">No shared tasks created yet.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0"><i class="fas fa-calendar me-2"></i>Upcoming Appointment</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1 fw-bold">18 August 2026</p>
+                    <p class="mb-1">10:30 AM</p>
+                    <p class="mb-1"><strong>Doctor:</strong> Dr. XXXXX</p>
+                    <p class="mb-0"><strong>Clinic:</strong> XXXXX Fertility Center</p>
+                </div>
+            </div>
+
+            {% if permissions and permissions.wellness_shared %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0"><i class="fas fa-leaf me-2"></i>Wellness</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>Mood:</strong> Good</p>
+                    <p class="mb-1"><strong>Stress:</strong> Moderate</p>
+                    <p class="mb-0"><strong>Energy:</strong> High</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0"><i class="fas fa-bell me-2"></i>Recent Notifications</h5>
+                </div>
+                <div class="card-body">
+                    {% for note in notifications %}
+                    <div class="border-bottom pb-2 mb-2">
+                        <small class="text-muted">{{ note.created_at.strftime('%d %b %Y') }}</small>
+                        <p class="mb-0">{{ note.message }}</p>
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No notifications yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

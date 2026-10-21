@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy & Data Usage - IVF Journey Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <h1 class="mb-4 text-primary"><i class="fas fa-shield-alt me-2"></i>Privacy Policy & Data Usage</h1>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5>1. Data Collection & Usage</h5>
+                    <p>We collect personal and medical data solely for the purpose of providing IVF tracking, AI predictions, and wellness insights. This includes medical history, cycle data, and uploaded documents.</p>
+                    
+                    <h5>2. AI & Research Disclaimer</h5>
+                    <p><strong>Research Prototype:</strong> This application uses Artificial Intelligence (AI) models which are currently in a research prototype phase. Predictions and insights are based on synthetic and historical datasets and should not be considered as absolute medical diagnoses.</p>
+                    <p><strong>Synthetic Data:</strong> Some features of this system have been trained using synthetic medical data to ensure privacy and model robustness.</p>
+                    
+                    <h5>3. Data Security</h5>
+                    <p>Your data is encrypted and stored securely. We do not share your personal identifiable information (PII) with third parties without your explicit consent.</p>
+                    
+                    <h5>4. User Consent</h5>
+                    <p>By using this application, you consent to the processing of your data for the purposes described above. You acknowledge that AI predictions are probabilistic and should be verified by a medical professional.</p>
+                    
+                    <h5>5. Ethics Statement</h5>
+                    <p>We adhere to strict ethical guidelines regarding the use of AI in healthcare, prioritizing patient well-being, transparency, and fairness.</p>
+                </div>
+            </div>
+
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Important:</strong> This tool is a support aid and does not replace professional medical advice. Always consult your doctor.
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{{ url_for('index') }}" class="btn btn-primary">Return to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

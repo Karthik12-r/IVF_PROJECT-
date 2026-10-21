@@ -1,0 +1,359 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Dashboard - IVF Journey Tracker{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/patient_dashboard.style.css') }}" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4 dashboard-container">
+
+    <!-- Welcome Header -->
+    <div class="welcome-banner mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <h2 class="fw-bold mb-1">
+                    <i class="fas fa-heartbeat text-danger me-2"></i>IVF Journey Tracker
+                </h2>
+                <p class="mb-0 welcome-subtitle">Welcome back, {{ user.first_name }}!</p>
+            </div>
+            <div class="mt-2 mt-md-0">
+                <span class="badge bg-white text-primary fs-6 px-3 py-2 shadow-sm">
+                    <i class="fas fa-calendar-day me-1"></i>{{ now.strftime('%A, %B %d, %Y') if now else 'Today' }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    {% if latest_cycle or latest_prediction or active_medications %}
+    <div class="row g-3 mb-4">
+        {% if latest_prediction %}
+        <div class="col-6 col-lg-3">
+            <div class="stat-card-gradient stat-primary">
+                <div class="stat-card-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-card-content">
+                    <h3>{{ (latest_prediction.success_probability * 100)|round(0) }}%</h3>
+                    <p>Success Rate</p>
+                    <small>AI Prediction</small>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if latest_cycle %}
+        <div class="col-6 col-lg-3">
+            <div class="stat-card-gradient stat-success">
+                <div class="stat-card-icon">
+                    <i class="fas fa-flask"></i>
+                </div>
+                <div class="stat-card-content">
+                    <h3>{{ latest_cycle.protocol }}</h3>
+                    <p>Current Stage</p>
+                    <small>Started {{ latest_cycle.start_date.strftime('%b %d') }}</small>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if active_medications %}
+        <div class="col-6 col-lg-3">
+            <div class="stat-card-gradient stat-warning">
+                <div class="stat-card-icon">
+                    <i class="fas fa-pills"></i>
+                </div>
+                <div class="stat-card-content">
+                    <h3>{{ active_medications|length }}</h3>
+                    <p>Active Meds</p>
+                    <small>Track your medications</small>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="col-6 col-lg-3">
+            <div class="stat-card-gradient {% if today_wellness_log_exists %}stat-info{% else %}stat-secondary{% endif %}">
+                <div class="stat-card-icon">
+                    <i class="fas {% if today_wellness_log_exists %}fa-check-circle{% else %}fa-leaf{% endif %}"></i>
+                </div>
+                <div class="stat-card-content">
+                    <h3>{% if today_wellness_log_exists %}Logged{% else %}Not Logged{% endif %}</h3>
+                    <p>Wellness</p>
+                    <small>{% if today_wellness_log_exists %}Keep it up!{% else %}Log your daily wellness{% endif %}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Feature Cards Grid -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ url_for('update_profile') }}" class="feature-card-link">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper icon-primary">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h5>My Profile</h5>
+                    <p>Update and view your personal details.</p>
+                    <span class="feature-btn btn-primary">Go <i class="fas fa-arrow-right ms-1"></i></span>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ url_for('wellness') }}" class="feature-card-link">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper icon-success">
+                        <i class="fas fa-notes-medical"></i>
+                    </div>
+                    <h5>My Wellness</h5>
+                    <p>Track your lifestyle and wellness metrics.</p>
+                    <span class="feature-btn btn-success">Go <i class="fas fa-arrow-right ms-1"></i></span>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ url_for('ivf_predictor') }}" class="feature-card-link">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper icon-warning">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h5>AI Prediction</h5>
+                    <p>View AI predictions for your IVF success.</p>
+                    <span class="feature-btn btn-warning">Go <i class="fas fa-arrow-right ms-1"></i></span>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ url_for('nutrition') }}" class="feature-card-link">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper icon-info">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h5>Nutrition</h5>
+                    <p>Access personalized diet recommendations.</p>
+                    <span class="feature-btn btn-info">Go <i class="fas fa-arrow-right ms-1"></i></span>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ url_for('my_documents') }}" class="feature-card-link">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper icon-secondary">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <h5>Documents</h5>
+                    <p>Upload and manage medical reports.</p>
+                    <span class="feature-btn btn-secondary">Go <i class="fas fa-arrow-right ms-1"></i></span>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ url_for('find_clinic') }}" class="feature-card-link">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper icon-danger">
+                        <i class="fas fa-hospital"></i>
+                    </div>
+                    <h5>Clinic</h5>
+                    <p>Find nearby fertility clinics and doctors.</p>
+                    <span class="feature-btn btn-danger">Go <i class="fas fa-arrow-right ms-1"></i></span>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="/chatbot" class="feature-card-link">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper icon-info">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h5>AI Chatbot</h5>
+                    <p>Get instant answers to your IVF questions.</p>
+                    <span class="feature-btn btn-info">Chat Now <i class="fas fa-arrow-right ms-1"></i></span>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ url_for('faq') }}" class="feature-card-link">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper icon-primary">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <h5>FAQ</h5>
+                    <p>Find answers to common IVF questions.</p>
+                    <span class="feature-btn btn-primary">View FAQ <i class="fas fa-arrow-right ms-1"></i></span>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ url_for('my_treatment') }}" class="feature-card-link">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper icon-purple">
+                        <i class="fas fa-syringe"></i>
+                    </div>
+                    <h5>My Treatment</h5>
+                    <p>Track your IVF cycles and medications.</p>
+                    <span class="feature-btn btn-purple">Go <i class="fas fa-arrow-right ms-1"></i></span>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ url_for('my_reminders') }}" class="feature-card-link">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper icon-warning">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h5>My Reminders</h5>
+                    <p>Manage medication reminders and alerts.</p>
+                    <span class="feature-btn btn-warning">Go <i class="fas fa-arrow-right ms-1"></i></span>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ url_for('messages') }}" class="feature-card-link">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper icon-success">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h5>Messages</h5>
+                    <p>Communicate with your doctor.</p>
+                    <span class="feature-btn btn-success">Go <i class="fas fa-arrow-right ms-1"></i></span>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ url_for('mindfulness') }}" class="feature-card-link">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper icon-pink">
+                        <i class="fas fa-spa"></i>
+                    </div>
+                    <h5>Mindfulness</h5>
+                    <p>Guided meditation and relaxation.</p>
+                    <span class="feature-btn btn-pink">Go <i class="fas fa-arrow-right ms-1"></i></span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Wellness Chart Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <h5><i class="fas fa-chart-line me-2"></i>Wellness Trends (Last 7 Days)</h5>
+                </div>
+                <div class="chart-card-body">
+                    <canvas id="dashboardWellnessChart" height="80"></canvas>
+                </div>
+                <div class="chart-card-footer">
+                    <a href="{{ url_for('wellness') }}" class="btn btn-primary btn-sm">View Full Wellness Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Tip Section -->
+    {% if ai_tip %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="ai-tip-card">
+                <div class="ai-tip-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <div class="ai-tip-content">
+                    <h5>AI Wellness Tip</h5>
+                    <p class="mb-0">{{ ai_tip }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Load wellness data for dashboard chart
+fetch('/api/wellness_data')
+    .then(response => response.json())
+    .then(data => {
+        // Get last 7 days of data
+        const dates = data.dates.slice(-7);
+        const mood = data.mood.slice(-7);
+        const stress = data.stress.slice(-7);
+        const energy = data.energy.slice(-7);
+
+        const ctx = document.getElementById('dashboardWellnessChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dates.map(d => {
+                    const date = new Date(d);
+                    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                }),
+                datasets: [
+                    {
+                        label: 'Mood',
+                        data: mood,
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Stress',
+                        data: stress,
+                        borderColor: '#ffc107',
+                        backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Energy',
+                        data: energy,
+                        borderColor: '#198754',
+                        backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 5
+                    }
+                }
+            }
+        });
+    })
+    .catch(error => {
+        console.log('No wellness data available yet');
+        // Show placeholder message
+        const chartContainer = document.querySelector('#dashboardWellnessChart').parentNode;
+        chartContainer.innerHTML = '<div class="text-center text-muted py-4"><p>No wellness data yet. Start tracking your wellness to see trends!</p></div>';
+    });
+</script>
+{% endblock %}

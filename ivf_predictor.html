@@ -1,0 +1,979 @@
+{% extends "base.html" %}
+
+{% block title %}IVF Success Predictor{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <style>
+        .prediction-card {
+            transition: all 0.3s ease-in-out;
+        }
+        .prediction-result-box {
+            border-left: 5px solid #0dcaf0;
+            background-color: #f8f9fa;
+        }
+        .spinner-border {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        .quality-score .score-circle,
+        .quality-grade .grade-display {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 auto;
+        }
+        .quality-score .score-circle {
+            background-color: #198754;
+            color: white;
+        }
+        .quality-grade .grade-display {
+            background-color: #ffc107;
+            color: #000;
+        }
+        .protocol-name {
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+        .factors-list .factor-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .factors-list .factor-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+<div class="page-header bg-gradient-info text-white rounded p-4">
+                <h1 class="mb-2">
+                    <i class="fas fa-brain me-3"></i>AI-Powered IVF Predictions
+                    <span class="badge bg-warning text-dark ms-2" style="font-size: 0.6em;">Research / Demo</span>
+                </h1>
+                <p class="mb-0 opacity-90">
+                    Revolutionary AI insights based on your unique medical profile and latest research
+                </p>
+                <div class="mt-2">
+                    <span class="badge bg-light text-dark">
+                        <i class="fas fa-info-circle me-1"></i>This is a proof-of-concept demo model. Not for clinical use.
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if not success_prediction %}
+        <!-- Incomplete Profile Warning -->
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-warning text-center persistent-alert">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                    <h4>Complete Your Profile for Accurate Predictions</h4>
+                    <p>To provide personalized AI predictions, we need your medical information.</p>
+                    <a href="{{ url_for('update_profile') }}" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>Complete Medical Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if success_prediction %}
+        <!-- Diagram generator card (moved above predictor) -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="fas fa-draw-polygon me-2"></i>Generate Diagram</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="diagram-form" class="mb-3">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="diagram-prompt" placeholder="Describe the diagram you need" required>
+                                <button type="submit" class="btn btn-outline-light">Create</button>
+                            </div>
+                        </form>
+                        <div id="diagram-result" class="text-center" style="min-height:120px;">
+                            <p class="text-muted mt-3">Enter a description and click "Create" to generate a diagram.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ML Prediction Form -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-user-edit me-2"></i>ML-Based IVF Success Predictor</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="prediction-form">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="Age" class="form-label">Age</label>
+                                    <input type="number" class="form-control" id="Age" value="{{ patient_data.age or 32 }}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="BMI" class="form-label">BMI (Body Mass Index)</label>
+                                    <input type="number" step="0.1" class="form-control" id="BMI" value="{{ patient_data.bmi or 22.5 }}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="AMH" class="form-label">AMH Level (ng/mL)</label>
+                                    <input type="number" step="0.1" class="form-control" id="AMH" value="{{ patient_data.amh_level or 2.5 }}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="FSH" class="form-label">FSH Level (mIU/mL)</label>
+                                    <input type="number" step="0.1" class="form-control" id="FSH" value="{{ patient_data.fsh_level or 7.0 }}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="Previous_IVF_Attempts" class="form-label">Previous IVF Attempts</label>
+                                    <input type="number" class="form-control" id="Previous_IVF_Attempts" value="{{ patient_data.previous_ivf_cycles or 0 }}" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="Stress_Level" class="form-label">Stress Level (1-5)</label>
+                                    <input type="number" class="form-control" id="Stress_Level" value="3" min="1" max="5" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="Sleep_Hours" class="form-label">Avg. Sleep (Hours)</label>
+                                    <input type="number" step="0.5" class="form-control" id="Sleep_Hours" value="7.5" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="Exercise_Min_per_Day" class="form-label">Avg. Exercise (Mins/Day)</label>
+                                    <input type="number" class="form-control" id="Exercise_Min_per_Day" value="30" required>
+                                </div>
+                            </div>
+                            <button type="submit" id="predict-btn" class="btn btn-primary w-100 mt-3">
+                                <i class="fas fa-cogs me-2"></i>Run ML Prediction
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ML Prediction Result -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm prediction-card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-bullseye me-2"></i>ML Prediction Result</h5>
+                    </div>
+                    <div class="card-body text-center" id="result-container">
+                        <p class="text-muted">Your ML-based prediction will appear here after running the form.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== IVF SUCCESS IMPROVEMENT SIMULATOR ========== -->
+        <div class="row mb-4 simulator-section" id="improvement-simulator" style="display: none;">
+            <div class="col-12">
+                <!-- Simulator Header -->
+                <div class="simulator-header mb-4">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <div>
+                            <h3 class="mb-1"><i class="fas fa-chart-line me-2"></i>How Can I Improve My IVF Success?</h3>
+                            <p class="mb-0 opacity-90">
+                                <i class="fas fa-lightbulb me-1"></i>
+                                See how small lifestyle changes can boost your success rate — powered by your real ML model
+                            </p>
+                        </div>
+                        <span class="badge bg-warning text-dark px-3 py-2" style="font-size: 0.85rem;">
+                            <i class="fas fa-robot me-1"></i> AI-Powered Simulation
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="simulator-loading" class="simulator-loading">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <h5 class="text-muted">Running improvement simulations...</h5>
+                    <p class="text-muted small">Analyzing lifestyle modifications for your profile</p>
+                </div>
+
+                <!-- Error State -->
+                <div id="simulator-error" class="alert alert-danger d-none">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span id="simulator-error-text">Failed to run simulation.</span>
+                </div>
+
+                <!-- Simulator Results -->
+                <div id="simulator-results" style="display: none;">
+                    <!-- Baseline + Chart Row -->
+                    <div class="row mb-4">
+                        <!-- Current Baseline Card -->
+                        <div class="col-lg-4 mb-3">
+                            <div class="card baseline-card h-100">
+                                <div class="card-body text-center">
+                                    <h6 class="text-muted mb-2">Current Prediction</h6>
+                                    <div class="baseline-value mb-2" id="baseline-value">58%</div>
+                                    <div class="baseline-progress">
+                                        <div class="baseline-bar" id="baseline-bar" style="width: 58%;"></div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <span class="badge bg-primary" id="baseline-label">Moderate Prospects</span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Based on your current lifestyle factors
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chart.js Comparison Chart -->
+                        <div class="col-lg-8 mb-3">
+                            <div class="card h-100">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Success Rate Comparison</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="improvementChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Improvement Cards Grid -->
+                    <div class="row" id="improvement-cards-container">
+                        <!-- Cards will be dynamically injected by JavaScript -->
+                    </div>
+
+                    <!-- Simulator Info Footer -->
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <div class="alert alert-info d-flex align-items-center gap-2 mb-0" style="border-left: 4px solid #0dcaf0;">
+                                <i class="fas fa-flask fa-lg"></i>
+                                <div>
+                                    <strong>How it works:</strong>
+                                    The simulator modifies one lifestyle factor at a time and uses your existing ML model
+                                    to predict the new success probability. It <strong>never retrains</strong> the model —
+                                    it simply asks "what if?" for each change. Results are stored for your reference.
+                                    <span class="badge bg-info text-dark ms-2">
+                                        <i class="fas fa-database me-1"></i>Stored Securely
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Predictions Content -->
+        <div class="row">
+            <!-- AI Embryo Quality Predictor -->
+            <div class="col-lg-12 mb-4">
+                <div class="card h-100 prediction-card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-microscope me-2"></i>AI Embryo Quality Predictor
+                            <span class="badge bg-warning text-dark ms-2">NEW!</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center mb-4">
+                            <div class="col-6">
+                                <div class="quality-score">
+                                    <div class="score-circle bg-success text-white">
+                                        {{ embryo_quality_score.quality_score }}
+                                    </div>
+                                    <h6 class="mt-2">Quality Score</h6>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="quality-grade">
+                                    <div class="grade-display">
+                                        <span class="grade-letter">{{ embryo_quality_score.grade.split()[0] }}</span>
+                                    </div>
+                                    <h6 class="mt-2">Grade</h6>
+                                    <small class="text-muted">{{ embryo_quality_score.grade.split('(')[1].rstrip(')') if '(' in embryo_quality_score.grade else '' }}</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="prediction-metrics">
+                            <div class="metric-item mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Development Probability</span>
+                                    <span class="fw-bold">{{ embryo_quality_score.development_probability }}%</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-info" style="width: {{ embryo_quality_score.development_probability }}%"></div>
+                                </div>
+                            </div>
+
+                            <div class="metric-item">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span>Implantation Potential</span>
+                                    <span class="fw-bold">{{ embryo_quality_score.implantation_potential }}%</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" style="width: {{ embryo_quality_score.implantation_potential }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Explanation Section -->
+                        <div class="mt-3">
+                            <h6 class="text-primary mb-2">Assessment Basis:</h6>
+                            <ul class="list-unstyled small">
+                                {% for explanation in embryo_quality_score.explanation %}
+                                    <li class="mb-1">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        {{ explanation }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            AI analysis based on your medical profile and current research
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personalized Protocol Advisor -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card prediction-card">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">
+                            <i class="fas fa-pills me-2"></i>Personalized Treatment Protocol Advisor
+                            <span class="badge bg-danger ms-2">NEW!</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-4 mb-3">
+                                <div class="protocol-overview">
+                                    <h6 class="text-primary">Recommended Protocol</h6>
+                                    <div class="protocol-name bg-light p-3 rounded">
+                                        <h5 class="mb-1">{{ protocol_recommendations.protocol_name }}</h5>
+                                        <p class="text-muted mb-0">Expected Response: {{ protocol_recommendations.expected_response }}</p>
+                                    </div>
+                                    <div class="personalization-score mt-3">
+                                        <small class="text-muted">Personalization Score</small>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-warning" style="width: {{ protocol_recommendations.personalization_score }}%"></div>
+                                        </div>
+                                        <small class="text-muted">{{ protocol_recommendations.personalization_score|round(0) }}% personalized</small>
+                                    </div>
+
+                                    <!-- Protocol Explanation -->
+                                    <div class="mt-3">
+                                        <h6 class="text-info mb-2">Why This Protocol?</h6>
+                                        <ul class="list-unstyled small">
+                                            {% for explanation in protocol_recommendations.protocol_explanation %}
+                                                <li class="mb-1">
+                                                    <i class="fas fa-info-circle text-info me-2"></i>
+                                                    {{ explanation }}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 mb-3">
+                                <h6 class="text-success">Medication Suggestions</h6>
+                                <ul class="list-unstyled medication-list">
+                                    {% for medication in protocol_recommendations.medication_suggestions %}
+                                        <li class="mb-2">
+                                            <i class="fas fa-prescription-bottle text-success me-2"></i>
+                                            {{ medication }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                            <div class="col-lg-4 mb-3">
+                                <h6 class="text-info">Timing Recommendations</h6>
+                                <div class="timing-details">
+                                    {% for key, value in protocol_recommendations.timing_recommendations.items() %}
+                                        <div class="timing-item mb-2">
+                                            <small class="text-muted">{{ key.replace('_', ' ').title() }}:</small>
+                                            <br><span class="fw-bold">{{ value }}</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-lightbulb me-2"></i>AI Recommendations for Success Optimization
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-primary">Medical Recommendations</h6>
+                                <ul class="list-unstyled">
+                                    {% for recommendation in success_prediction.recommendations %}
+                                        <li class="mb-2">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            {{ recommendation }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-success">Success Optimization Tips</h6>
+                                <ul class="list-unstyled">
+                                    {% for tip in protocol_recommendations.success_optimization %}
+                                        <li class="mb-2">
+                                            <i class="fas fa-star text-warning me-2"></i>
+                                            {{ tip }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Important:</strong> These AI predictions are based on statistical models and current research.
+                    Always consult with your healthcare provider for medical decisions.
+                    Individual results may vary.
+                </div>
+            </div>
+        </div>
+
+    {% endif %}  <!-- end success_prediction conditional -->
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+document.getElementById('prediction-form')?.addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const predictBtn = document.getElementById('predict-btn');
+    const resultContainer = document.getElementById('result-container');
+
+    // --- Show loading state ---
+    predictBtn.disabled = true;
+    predictBtn.innerHTML = `<span class="spinner-border" role="status" aria-hidden="true"></span> Analyzing...`;
+    resultContainer.innerHTML = `<div class="d-flex justify-content-center align-items-center p-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>`;
+
+    // --- Client-side validation ---
+    const inputIds = ["Age", "BMI", "AMH", "FSH", "Previous_IVF_Attempts", "Stress_Level", "Sleep_Hours", "Exercise_Min_per_Day"];
+    for (const id of inputIds) {
+        const inputElement = document.getElementById(id);
+        if (!inputElement.value || isNaN(parseFloat(inputElement.value))) {
+            resultContainer.innerHTML = `<div class="alert alert-danger"><strong>Error:</strong> Please enter a valid number for "${inputElement.labels[0].textContent}".</div>`;
+            predictBtn.disabled = false;
+            predictBtn.innerHTML = '<i class="fas fa-cogs me-2"></i>Run AI Prediction';
+            return; // Stop execution if validation fails
+        }
+    }
+
+    // --- Collect data from the form ---
+    const features = {
+        "Age": parseInt(document.getElementById('Age').value),
+        "BMI": parseFloat(document.getElementById('BMI').value),
+        "AMH": parseFloat(document.getElementById('AMH').value),
+        "FSH": parseFloat(document.getElementById('FSH').value),
+        "Previous_IVF_Attempts": parseInt(document.getElementById('Previous_IVF_Attempts').value),
+        "Stress_Level": parseInt(document.getElementById('Stress_Level').value),
+        "Sleep_Hours": parseFloat(document.getElementById('Sleep_Hours').value),
+        "Exercise_Min_per_Day": parseInt(document.getElementById('Exercise_Min_per_Day').value)
+    };
+
+    try {
+        // --- Call the Flask API ---
+        const response = await fetch('/predict_ivf', {
+            method: 'POST',
+            // Add credentials to ensure session is sent (if needed for login_required)
+            credentials: 'same-origin', 
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(features),
+        });
+
+        if (!response.ok) {
+            console.error('API Response Not OK:', response);
+            const errorData = await response.json();
+            throw new Error(errorData.error || `Server responded with status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        // --- Debugging: Log the raw result to console ---
+        console.log('Raw API Result:', result);
+        
+        // --- Display the result ---
+        const probability = result.success_probability;
+        const predictionText = result.prediction_text;
+        const alertClass = probability >= 50 ? 'alert-success' : 'alert-warning';
+
+        resultContainer.innerHTML = `
+            <div class="prediction-result-box p-3 rounded">
+                <h2 class="display-4 fw-bold text-info">${probability}%</h2>
+                <p class="lead mb-2">Predicted Success Chance</p>
+                <div class="progress" style="height: 20px;">
+                    <div class="progress-bar bg-info" role="progressbar" style="width: ${probability}%;" aria-valuenow="${probability}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="alert ${alertClass} mt-3 mb-0">
+                    <strong>Outcome Prediction:</strong> ${predictionText}
+                </div>
+            </div>
+            <small class="text-muted mt-2 d-block">
+                <i class="fas fa-info-circle me-1"></i>This prediction is based on an AI model analyzing patterns in historical data. It is not a medical guarantee.
+            </small>
+        `;
+
+    } catch (error) {
+        console.error('Prediction Error:', error);
+        resultContainer.innerHTML = `
+            <div class="alert alert-danger">
+                <strong><i class="fas fa-exclamation-triangle me-2"></i>Error:</strong>
+                <p class="mb-0">Could not retrieve prediction. ${error.message}</p>
+            </div>
+        `;
+    } finally {
+        // --- Reset button state ---
+        predictBtn.disabled = false;
+        predictBtn.innerHTML = '<i class="fas fa-cogs me-2"></i>Run AI Prediction';
+    }
+});
+
+// diagram form logic
+const diagramForm = document.getElementById('diagram-form');
+diagramForm?.addEventListener('submit', async function(evt) {
+    evt.preventDefault();
+    const promptEl = document.getElementById('diagram-prompt');
+    const resultEl = document.getElementById('diagram-result');
+    const prompt = promptEl.value.trim();
+    if (!prompt) return;
+    // clear and show spinner with margin
+    resultEl.innerHTML = '<div class="spinner-border text-secondary mt-3" role="status"><span class="visually-hidden">Generating...</span></div>';
+    try {
+        const resp = await fetch('/generate_diagram', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt })
+        });
+        const data = await resp.json();
+        if (data.url) {
+            resultEl.innerHTML = `<img src="${data.url}" class="img-fluid rounded mt-3" alt="Generated diagram" />`;
+        } else {
+            resultEl.innerHTML = '<div class="alert alert-danger mt-3">Unable to generate diagram.</div>';
+        }
+    } catch (err) {
+        console.error(err);
+        resultEl.innerHTML = '<div class="alert alert-danger mt-3">Error contacting server.</div>';
+    }
+});
+
+// ========== IVF SUCCESS IMPROVEMENT SIMULATOR ==========
+
+/**
+ * Runs the IVF Success Improvement Simulator after ML prediction.
+ * Modifies the prediction form submit handler to also call the simulator API.
+ */
+(async function initSimulator() {
+    'use strict';
+
+    const predictionForm = document.getElementById('prediction-form');
+    const resultContainer = document.getElementById('result-container');
+    if (!predictionForm || !resultContainer) return;
+
+    // Track chart instance globally so we can destroy/recreate it
+    let improvementChartInstance = null;
+
+    /**
+     * Converts our feature naming from the form (camelCase) to snake_case
+     * as expected by the simulator API.
+     */
+    function getFeaturesForSimulator() {
+        return {
+            "Age": parseInt(document.getElementById('Age').value),
+            "BMI": parseFloat(document.getElementById('BMI').value),
+            "AMH": parseFloat(document.getElementById('AMH').value),
+            "FSH": parseFloat(document.getElementById('FSH').value),
+            "Previous_IVF_Attempts": parseInt(document.getElementById('Previous_IVF_Attempts').value),
+            "Stress_Level": parseInt(document.getElementById('Stress_Level').value),
+            "Sleep_Hours": parseFloat(document.getElementById('Sleep_Hours').value),
+            "Exercise_Min_per_Day": parseInt(document.getElementById('Exercise_Min_per_Day').value)
+        };
+    }
+
+    /**
+     * Shows / hides loading state for simulator
+     */
+    function setSimulatorLoading(isLoading) {
+        const loadingEl = document.getElementById('simulator-loading');
+        const resultsEl = document.getElementById('simulator-results');
+        const errorEl = document.getElementById('simulator-error');
+        const section = document.getElementById('improvement-simulator');
+
+        if (isLoading) {
+            section.style.display = 'block';
+            loadingEl.style.display = 'block';
+            resultsEl.style.display = 'none';
+            errorEl.classList.add('d-none');
+        } else {
+            loadingEl.style.display = 'none';
+        }
+    }
+
+    /**
+     * Shows error message in simulator
+     */
+    function showSimulatorError(message) {
+        const errorEl = document.getElementById('simulator-error');
+        const errorText = document.getElementById('simulator-error-text');
+        errorText.textContent = message || 'Failed to run improvement simulation. Please try again.';
+        errorEl.classList.remove('d-none');
+        document.getElementById('simulator-loading').style.display = 'none';
+        document.getElementById('simulator-results').style.display = 'none';
+    }
+
+    /**
+     * Helper to get factor tag CSS class based on factor name
+     */
+    function getFactorTagClass(factor) {
+        const map = {
+            'weight_loss': 'bmi-tag',
+            'stress_reduction': 'stress-tag',
+            'sleep_optimization': 'sleep-tag',
+            'exercise_optimization': 'exercise-tag',
+            'all_optimized': 'combined-tag'
+        };
+        return map[factor] || 'bmi-tag';
+    }
+
+    /**
+     * Helper to get factor icon based on factor name
+     */
+    function getFactorIcon(factor) {
+        const map = {
+            'weight_loss': 'fa-weight',
+            'stress_reduction': 'fa-heart',
+            'sleep_optimization': 'fa-bed',
+            'exercise_optimization': 'fa-running',
+            'all_optimized': 'fa-star'
+        };
+        return map[factor] || 'fa-arrow-up';
+    }
+
+    /**
+     * Helper to get card header color based on factor
+     */
+    function getCardHeaderClass(factor) {
+        const map = {
+            'weight_loss': 'bg-primary text-white',
+            'stress_reduction': 'bg-danger text-white',
+            'sleep_optimization': 'bg-purple text-white',
+            'exercise_optimization': 'bg-success text-white',
+            'all_optimized': 'bg-warning text-dark'
+        };
+        return map[factor] || 'bg-info text-white';
+    }
+
+    /**
+     * Builds and renders improvement cards from API data
+     */
+    function renderImprovementCards(data) {
+        const container = document.getElementById('improvement-cards-container');
+        const improvements = data.improvements || [];
+
+        if (improvements.length === 0) {
+            container.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-success text-center">
+                        <i class="fas fa-check-circle fa-2x mb-2"></i>
+                        <h5>Great News!</h5>
+                        <p class="mb-0">Your lifestyle factors are already well-optimized! 
+                        No significant improvements needed based on the model's analysis.</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+        improvements.forEach((imp, index) => {
+            const isCombined = imp.factor === 'all_optimized';
+            const combinedClass = isCombined ? 'combined-card' : '';
+            const headerClass = getCardHeaderClass(imp.factor);
+            const tagClass = getFactorTagClass(imp.factor);
+            const icon = getFactorIcon(imp.factor);
+            const deltaClass = imp.delta >= 15 ? 'very-positive' : 'positive';
+
+            html += `
+                <div class="col-lg-6 col-xl-4 mb-4">
+                    <div class="card improvement-card ${combinedClass}">
+                        <div class="card-header ${headerClass}">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span><i class="fas ${icon} me-2"></i>${imp.label}</span>
+                                <span class="sim-factor-tag ${tagClass}">${isCombined ? 'COMBINED' : imp.factor.split('_')[0].toUpperCase()}</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="improvement-indicator">
+                                <div class="improvement-label">
+                                    <i class="fas fa-chart-line me-1 text-muted"></i>
+                                    Success Rate
+                                </div>
+                                <div class="improvement-value">
+                                    <span class="fw-bold" style="color: var(--primary-color);">${imp.new_probability}%</span>
+                                </div>
+                            </div>
+                            <div class="improvement-progress">
+                                <div class="progress-bar bg-info" 
+                                     style="width: 0%;" 
+                                     data-target="${imp.new_probability}">
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mt-2">
+                                <small class="text-muted">Current: ${data.current_probability}%</small>
+                                <span class="delta-badge ${deltaClass}">
+                                    <span class="delta-arrow">↑</span> +${imp.delta}%
+                                </span>
+                            </div>
+                            <div class="explanation-text mt-3">
+                                <i class="fas fa-info-circle me-1"></i>
+                                ${imp.explanation}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+        // Animate progress bars after a short delay
+        setTimeout(() => {
+            document.querySelectorAll('.improvement-progress .progress-bar').forEach(bar => {
+                const target = bar.getAttribute('data-target');
+                bar.style.width = target + '%';
+            });
+        }, 200);
+    }
+
+    /**
+     * Renders the Chart.js comparison bar chart
+     */
+    function renderComparisonChart(data) {
+        const ctx = document.getElementById('improvementChart').getContext('2d');
+
+        // Destroy previous chart instance if it exists
+        if (improvementChartInstance) {
+            improvementChartInstance.destroy();
+        }
+
+        const improvements = data.improvements || [];
+        
+        // Build labels and data arrays
+        const labels = ['Current'];
+        const values = [data.current_probability];
+        const colors = ['rgba(13, 110, 253, 0.8)'];
+
+        // Add each improvement (but combine ALL at the end)
+        improvements.forEach(imp => {
+            let shortLabel = '';
+            if (imp.factor === 'weight_loss') shortLabel = 'Healthy BMI';
+            else if (imp.factor === 'stress_reduction') shortLabel = 'Low Stress';
+            else if (imp.factor === 'sleep_optimization') shortLabel = 'Good Sleep';
+            else if (imp.factor === 'exercise_optimization') shortLabel = 'Exercise';
+            else if (imp.factor === 'all_optimized') shortLabel = '🌟 All Optimized';
+            else shortLabel = imp.label.substring(0, 20);
+
+            labels.push(shortLabel);
+            values.push(imp.new_probability);
+            colors.push(imp.factor === 'all_optimized' 
+                ? 'rgba(255, 193, 7, 0.9)' 
+                : 'rgba(25, 135, 84, 0.7)');
+        });
+
+        improvementChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'IVF Success Probability (%)',
+                    data: values,
+                    backgroundColor: colors,
+                    borderColor: colors.map(c => c.replace('0.7', '1').replace('0.8', '1').replace('0.9', '1')),
+                    borderWidth: 2,
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Success Rate: ${context.raw}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Success Probability (%)',
+                            font: { weight: 'bold' }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Main function to run the simulator via API call
+     */
+    async function runSimulator(features) {
+        const section = document.getElementById('improvement-simulator');
+        section.style.display = 'block';
+        setSimulatorLoading(true);
+
+        try {
+            const response = await fetch('/api/ivf_simulator', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(features)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || `Server responded with status ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // Handle error from server
+            if (data.error) {
+                showSimulatorError(data.error);
+                return;
+            }
+
+            // Handle no improvements (model not available)
+            if (data.current_probability === null || data.current_probability === undefined) {
+                showSimulatorError('Unable to run simulation. The ML model may not be available.');
+                return;
+            }
+
+            // Update baseline UI
+            document.getElementById('baseline-value').textContent = data.current_probability + '%';
+            document.getElementById('baseline-bar').style.width = data.current_probability + '%';
+            document.getElementById('baseline-label').textContent = data.current_prediction || 'Prediction';
+
+            // Hide loading, show results
+            document.getElementById('simulator-loading').style.display = 'none';
+            document.getElementById('simulator-results').style.display = 'block';
+
+            // Render improvement cards
+            renderImprovementCards(data);
+
+            // Render Chart.js comparison
+            renderComparisonChart(data);
+
+            // Log the simulation ID if available
+            if (data.simulation_id) {
+                console.log(`Simulation saved with ID: ${data.simulation_id}`);
+            }
+
+        } catch (error) {
+            console.error('Simulator Error:', error);
+            showSimulatorError(error.message);
+        }
+    }
+
+    // Hook into the existing prediction form submit
+    const originalSubmitHandler = predictionForm.onsubmit;
+    
+    // We need to hook into the existing listener without replacing it
+    // Since the form already has a listener via addEventListener, we'll piggyback
+    // by watching the ML prediction result container for updates
+    const resultObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+                const resultContainer = document.getElementById('result-container');
+                // Check if the result container has a prediction result (not loading/error)
+                const hasPrediction = resultContainer.querySelector('.prediction-result-box');
+                if (hasPrediction) {
+                    // Run the simulator with current form values
+                    const features = getFeaturesForSimulator();
+                    runSimulator(features);
+                    // Disconnect observer after first successful trigger
+                    resultObserver.disconnect();
+                }
+            }
+        });
+    });
+
+    // Start observing the result container for prediction results
+    resultObserver.observe(resultContainer, { childList: true, subtree: true });
+
+    console.log('IVF Success Improvement Simulator initialized. Waiting for prediction...');
+})();
+</script>
+{% endblock %}

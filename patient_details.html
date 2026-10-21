@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/patient_details.style.css') }}">
+{% endblock %}
+
+{% block title %}Patient Details - IVF Journey Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="mb-2">
+                        <i class="fas fa-user-circle me-2"></i>{{ patient.first_name }} {{ patient.last_name }}
+                    </h1>
+                    <p class="mb-0 text-muted">Patient ID: {{ patient.id }} | Email: {{ patient.email }}</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('edit_patient', patient_id=patient.id) }}" class="btn btn-primary me-2">
+                        <i class="fas fa-edit me-1"></i>Edit Patient
+                    </a>
+                    <a href="{{ url_for('doctor_dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card bg-primary text-white">
+                <div class="stat-icon">
+                    <i class="fas fa-birthday-cake"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ patient_data.age if patient_data and patient_data.age else 'N/A' }}</h3>
+                    <p>Age</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card bg-info text-white">
+                <div class="stat-icon">
+                    <i class="fas fa-weight"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ "%.1f"|format(patient_data.bmi) if patient_data and patient_data.bmi else 'N/A' }}</h3>
+                    <p>BMI</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card bg-success text-white">
+                <div class="stat-icon">
+                    <i class="fas fa-vial"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ "%.1f"|format(patient_data.amh_level) if patient_data and patient_data.amh_level else 'N/A' }}</h3>
+                    <p>AMH Level</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card bg-warning text-white">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ "%.1f"|format(latest_prediction.success_probability * 100) if latest_prediction and latest_prediction.success_probability else 'N/A' }}%</h3>
+                    <p>Success Rate</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Medical Information -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-stethoscope me-2"></i>Medical Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if patient_data %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Basic Metrics</h6>
+                                <ul class="list-unstyled">
+                                    <li><strong>Height:</strong> {{ "%.1f"|format(patient_data.height) if patient_data.height else 'N/A' }} cm</li>
+                                    <li><strong>Weight:</strong> {{ "%.1f"|format(patient_data.weight) if patient_data.weight else 'N/A' }} kg</li>
+                                    <li><strong>BMI:</strong> {{ "%.1f"|format(patient_data.bmi) if patient_data.bmi else 'N/A' }}</li>
+                                    <li><strong>AMH Level:</strong> {{ "%.1f"|format(patient_data.amh_level) if patient_data.amh_level else 'N/A' }} ng/mL</li>
+                                    <li><strong>FSH Level:</strong> {{ "%.1f"|format(patient_data.fsh_level) if patient_data.fsh_level else 'N/A' }} mIU/mL</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Medical History</h6>
+                                <ul class="list-unstyled">
+                                    <li><strong>Diagnosis:</strong> {{ patient_data.diagnosis or 'N/A' }}</li>
+                                    <li><strong>Previous Pregnancies:</strong> {{ patient_data.previous_pregnancies or 0 }}</li>
+                                    <li><strong>Previous IVF Cycles:</strong> {{ patient_data.previous_ivf_cycles or 0 }}</li>
+                                    <li><strong>Partner Age:</strong> {{ patient_data.partner_age or 'N/A' }}</li>
+                                    <li><strong>Partner Diagnosis:</strong> {{ patient_data.partner_diagnosis or 'N/A' }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Medications & Allergies</h6>
+                                <p><strong>Current Medications:</strong> {{ patient_data.medications or 'None specified' }}</p>
+                                <p><strong>Allergies:</strong> {{ patient_data.allergies or 'None specified' }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Lifestyle Factors</h6>
+                                <p>{{ patient_data.lifestyle_factors or 'No lifestyle information provided' }}</p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No medical data available for this patient.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- IVF Cycles -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-alt me-2"></i>IVF Cycles
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if cycles %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Cycle #</th>
+                                        <th>Protocol</th>
+                                        <th>Start Date</th>
+                                        <th>Status</th>
+                                        <th>Outcome</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for cycle in cycles %}
+                                    <tr>
+                                        <td>{{ cycle.id }}</td>
+                                        <td>{{ cycle.protocol or 'Standard' }}</td>
+                                        <td>{{ cycle.start_date.strftime('%m/%d/%Y') if cycle.start_date else 'N/A' }}</td>
+                                        <td>
+                                            {% if cycle.outcome == 'BFP' %}
+                                                <span class="badge bg-success">Successful</span>
+                                            {% elif cycle.outcome == 'BFN' %}
+                                                <span class="badge bg-danger">Unsuccessful</span>
+                                            {% elif cycle.outcome == 'Ongoing' %}
+                                                <span class="badge bg-primary">Ongoing</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ cycle.status.title() if cycle.status else 'Planned' }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ cycle.outcome or 'N/A' }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="openNotesModal({{ cycle.id }})">
+                                                <i class="fas fa-notes-medical"></i> Notes
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No IVF cycles recorded for this patient.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Recent Wellness Logs -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-heartbeat me-2"></i>Recent Wellness
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if recent_wellness %}
+                        {% for log in recent_wellness %}
+                        <div class="wellness-item mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <strong>{{ log.date.strftime('%m/%d/%Y') }}</strong>
+                                <span class="badge bg-primary">Mood: {{ log.mood_rating }}/5</span>
+                            </div>
+                            <div class="small text-muted">
+                                Stress: {{ log.stress_level }}/5 | Sleep: {{ log.sleep_hours }}h | Energy: {{ log.energy_level }}/5
+                            </div>
+                            {% if log.mood_notes %}
+                                <div class="small mt-1">
+                                    <em>"{{ log.mood_notes[:50] }}..."</em>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% if not loop.last %}
+                            <hr class="my-2">
+                        {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted small">No wellness logs available.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Active Medications -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-pills me-2"></i>Active Medications
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if active_medications %}
+                        {% for med in active_medications %}
+                        <div class="medication-item mb-2">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong>{{ med.medication_name }}</strong>
+                                    <br><small class="text-muted">{{ med.dosage }} at {{ med.time_of_day.strftime('%I:%M %p') if med.time_of_day else 'N/A' }}</small>
+                                </div>
+                                <span class="badge bg-success">Active</span>
+                            </div>
+                            {% if med.notes %}
+                                <div class="small text-muted mt-1">{{ med.notes }}</div>
+                            {% endif %}
+                        </div>
+                        {% if not loop.last %}
+                            <hr class="my-2">
+                        {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted small">No active medications.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Latest Prediction -->
+            {% if latest_prediction %}
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-brain me-2"></i>Latest AI Prediction
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="prediction-score">
+                            <h4 class="text-primary">{{ "%.1f"|format(latest_prediction.success_probability * 100) }}%</h4>
+                            <p class="small text-muted">Success Probability</p>
+                        </div>
+                    </div>
+                    <div class="small text-muted">
+                        <strong>Protocol:</strong> {{ latest_prediction.protocol_recommendation or 'N/A' }}<br>
+                        <strong>Date:</strong> {{ latest_prediction.prediction_date.strftime('%m/%d/%Y') if latest_prediction.prediction_date else 'N/A' }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Notes Modal -->
+<div class="modal fade" id="notesModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="notesForm" method="POST" action="">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cycle Notes</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="notesContent">
+                        <!-- Notes will be loaded here -->
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <label for="noteContent" class="form-label">Add New Note</label>
+                        <textarea class="form-control" id="noteContent" name="note_content" rows="4" placeholder="Enter clinical observations, recommendations, or notes for this cycle..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Note</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function openNotesModal(cycleId) {
+    if (!cycleId || cycleId === 'null') {
+        alert('This patient does not have an active cycle to add a note to.');
+        return;
+    }
+
+    const notesForm = document.getElementById('notesForm');
+    if (notesForm) {
+        notesForm.action = `/add_cycle_note/${cycleId}`;
+    }
+
+    // Load existing notes for this cycle
+    fetch(`/api/cycle_notes/${cycleId}`)
+        .then(response => response.json())
+        .then(data => {
+            const notesContent = document.getElementById('notesContent');
+            if (data.notes && data.notes.length > 0) {
+                notesContent.innerHTML = data.notes.map(note => `
+                    <div class="note-item mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>${note.doctor_name}</strong>
+                                <small class="text-muted ms-2">${new Date(note.created_at).toLocaleDateString()}</small>
+                            </div>
+                        </div>
+                        <p class="mt-2">${note.note_content}</p>
+                    </div>
+                `).join('');
+            } else {
+                notesContent.innerHTML = '<p class="text-muted">No notes for this cycle yet.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading notes:', error);
+            document.getElementById('notesContent').innerHTML = '<p class="text-danger">Error loading notes.</p>';
+        });
+
+    const modal = new bootstrap.Modal(document.getElementById('notesModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

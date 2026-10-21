@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhseINkfSgoIHPqNkRHE2pRESqmAudayI1AI=" crossorigin=""/>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.style.css') }}">
+{% endblock %}
+
+{% block title %}My Notes - IVF Journey Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header bg-gradient-success text-white p-4">
+                <h1 class="mb-2">
+                    <i class="fas fa-notes-medical me-3"></i>My Authored Notes
+                </h1>
+                <p class="mb-0 opacity-90">
+                    A complete history of all clinical notes you have written for your patients.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes List -->
+    <div class="row">
+        <div class="col-12">
+            {% if notes %}
+                {% for note in notes %}
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">
+                                    Note for Patient:
+                                    <span class="text-primary">{{ note.cycle.patient.first_name }} {{ note.cycle.patient.last_name }}</span>
+                                </h6>
+                                <small class="text-muted">
+                                    Regarding Cycle #{{ note.cycle.id }}
+                                </small>
+                            </div>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                {{ note.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                            </small>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{ note.note_content|replace('\n', '<br>')|safe }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                        <h4 class="card-title">No Notes Found</h4>
+                        <p class="card-text text-muted">
+                            You have not written any cycle notes yet. You can add notes from the Doctor Dashboard.
+                        </p>
+                        <a href="{{ url_for('doctor_dashboard') }}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

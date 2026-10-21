@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Messages - IVF Journey Tracker{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/wellness.style.css') }}">
+<style>
+    .message-card {
+        transition: transform 0.2s;
+    }
+    .message-card:hover {
+        transform: translateY(-2px);
+    }
+    .message-unread {
+        border-left: 4px solid #0d6efd;
+        background-color: #f8faff;
+    }
+    .message-read {
+        border-left: 4px solid #6c757d;
+    }
+    .message-sent {
+        border-left: 4px solid #198754;
+    }
+    .message-received {
+        border-left: 4px solid #ffc107;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header bg-gradient-success text-white rounded p-4">
+                <h1 class="mb-2">
+                    <i class="fas fa-envelope me-3"></i>Messages
+                </h1>
+                <p class="mb-0 opacity-90">
+                    Communicate with your doctor
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Send Message Form -->
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-pen me-2"></i>Send New Message
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">To Doctor *</label>
+                            <select class="form-select" name="receiver_id" required>
+                                <option value="">Select a doctor</option>
+                                {% for doctor in doctors %}
+                                <option value="{{ doctor.id }}">Dr. {{ doctor.first_name }} {{ doctor.last_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Subject *</label>
+                            <input type="text" class="form-control" name="subject" placeholder="Message subject" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Message *</label>
+                            <textarea class="form-control" name="content" rows="5" placeholder="Write your message here..." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-paper-plane me-2"></i>Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Communication Tips
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Be specific about your concerns</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Include relevant dates</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Mention any symptoms</li>
+                        <li class="mb-0"><i class="fas fa-check text-success me-2"></i>Ask clear questions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages List -->
+        <div class="col-lg-8">
+            <!-- Tabs -->
+            <ul class="nav nav-tabs mb-3" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#received" type="button">
+                        <i class="fas fa-inbox me-2"></i>Received
+                        {% if unread_count > 0 %}
+                        <span class="badge bg-primary ms-1">{{ unread_count }}</span>
+                        {% endif %}
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#sent" type="button">
+                        <i class="fas fa-paper-plane me-2"></i>Sent
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Received Messages -->
+                <div class="tab-pane fade show active" id="received">
+                    {% if received_messages %}
+                        {% for message in received_messages %}
+                        <div class="card message-card mb-3 {{ 'message-unread' if not message.is_read else 'message-read' }}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h6 class="mb-0">
+                                                {% if not message.is_read %}<span class="badge bg-primary me-2">New</span>{% endif %}
+                                                {{ message.subject }}
+                                            </h6>
+                                            <small class="text-muted">{{ message.created_at.strftime('%b %d, %Y %I:%M %p') }}</small>
+                                        </div>
+                                        <p class="mb-2 text-muted small">
+                                            <i class="fas fa-user me-1"></i>From: Dr. 
+                                            {% if message.sender %}
+                                                {{ message.sender.first_name }} {{ message.sender.last_name }}
+                                            {% else %}
+                                                Unknown
+                                            {% endif %}
+                                        </p>
+                                        <p class="mb-0">{{ message.content }}</p>
+                                    </div>
+                                    {% if not message.is_read %}
+                                    <form method="POST" action="{{ url_for('mark_message_read', message_id=message.id) }}" class="ms-3">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary" title="Mark as read">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="card">
+                            <div class="card-body text-center text-muted py-5">
+                                <i class="fas fa-inbox fa-3x mb-3"></i>
+                                <h5>No received messages</h5>
+                                <p>Messages from your doctor will appear here.</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Sent Messages -->
+                <div class="tab-pane fade" id="sent">
+                    {% if sent_messages %}
+                        {% for message in sent_messages %}
+                        <div class="card message-card mb-3 message-sent">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h6 class="mb-0">{{ message.subject }}</h6>
+                                            <small class="text-muted">{{ message.created_at.strftime('%b %d, %Y %I:%M %p') }}</small>
+                                        </div>
+                                        <p class="mb-2 text-muted small">
+                                            <i class="fas fa-user me-1"></i>To: Dr. 
+                                            {% if message.receiver %}
+                                                {{ message.receiver.first_name }} {{ message.receiver.last_name }}
+                                            {% else %}
+                                                Unknown
+                                            {% endif %}
+                                        </p>
+                                        <p class="mb-0">{{ message.content }}</p>
+                                    </div>
+                                    <span class="badge bg-success ms-3">Sent</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="card">
+                            <div class="card-body text-center text-muted py-5">
+                                <i class="fas fa-paper-plane fa-3x mb-3"></i>
+                                <h5>No sent messages</h5>
+                                <p>Messages you send to doctors will appear here.</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

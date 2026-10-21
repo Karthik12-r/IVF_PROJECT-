@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Partner Profile{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0"><i class="fas fa-user me-2"></i>Partner Profile</h2>
+        <a href="{{ url_for('partner_dashboard') }}" class="btn btn-outline-secondary btn-sm">Back to dashboard</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width: 88px; height: 88px;">
+                        <i class="fas fa-user text-primary fa-2x"></i>
+                    </div>
+                    <h4 class="mb-1">{{ user.first_name }} {{ user.last_name }}</h4>
+                    <p class="text-muted mb-0">Partner account</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="mb-3">Account Details</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small">Email</label>
+                            <div class="form-control-plaintext border rounded px-3 py-2 bg-light">{{ user.email }}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small">Phone</label>
+                            <div class="form-control-plaintext border rounded px-3 py-2 bg-light">{{ user.phone or 'Not provided' }}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small">Connected patient</label>
+                            <div class="form-control-plaintext border rounded px-3 py-2 bg-light">{{ patient.first_name }} {{ patient.last_name if patient else 'Not connected yet' }}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small">Status</label>
+                            <div class="form-control-plaintext border rounded px-3 py-2 bg-light">
+                                {% if connection %}
+                                <span class="badge text-bg-success">Connected</span>
+                                {% else %}
+                                <span class="badge text-bg-secondary">Not active</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

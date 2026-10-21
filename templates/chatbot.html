@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVF AI Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 700px;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+            background-color: white;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background-color: #2c77a3; /* New header color */
+            color: white;
+            padding: 1.5rem;
+            border-top-left-radius: 1.5rem;
+            border-top-right-radius: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .chat-header .icon {
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .chat-box {
+            flex-grow: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message-container {
+            display: flex;
+            width: 100%;
+        }
+
+        .message-container.user {
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            max-width: 75%;
+            padding: 0.8rem 1.2rem;
+            border-radius: 1.5rem;
+            word-wrap: break-word;
+            line-height: 1.5;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .message-bubble.user {
+            background-color: #4a90e2; /* New user bubble color */
+            color: white;
+            border-bottom-right-radius: 0.5rem;
+        }
+
+        .message-bubble.bot {
+            background-color: #e6f3f9; /* New bot bubble color */
+            color: #333;
+            border-bottom-left-radius: 0.5rem;
+        }
+
+        .input-area {
+            display: flex;
+            padding: 1rem;
+            border-top: 1px solid #e5e7eb;
+            background-color: white;
+        }
+
+        .input-area input {
+            flex-grow: 1;
+            padding: 0.8rem 1.5rem;
+            border-radius: 2rem;
+            border: 1px solid #d1d5db;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-area input:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+
+        .input-area button {
+            padding: 0.8rem 1.8rem;
+            border-radius: 2rem;
+            background-color: #4a90e2;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            margin-left: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-area button:hover {
+            background-color: #357bd1;
+            transform: translateY(-2px);
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #4a90e2;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .audio-controls button {
+            background-color: #4b5563;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .audio-controls button:hover {
+            background-color: #374151;
+            transform: scale(1.05);
+        }
+
+        .audio-controls button.loading {
+            background-color: #059669;
+            animation: pulse 1.5s infinite;
+        }
+
+        .audio-controls button.loading::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="chat-container">
+        <!-- Chatbot Header -->
+        <div class="chat-header">
+            <span class="icon">🤖</span>
+            <h1 class="text-xl font-semibold">IVF Assistant</h1>
+        </div>
+
+        <!-- Chat messages display area -->
+        <div id="chat-box" class="chat-box">
+            <!-- Initial bot message -->
+            <div class="message-container bot">
+                <div class="message-bubble bot">
+                    Hello! I'm your IVF assistant. How can I help you today?
+                    <div class="audio-controls">
+                        <button onclick="playTTS('Hello! I\'m your IVF assistant. How can I help you today?', this);">🔊</button>
+                    </div>
+                </div>
+            </div>
+            <div id="loading-spinner" class="message-container bot hidden">
+                <div class="message-bubble bot flex items-center gap-2">
+                    <div class="spinner"></div>
+                    <div>Typing...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input and Send button -->
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type your message..." onkeydown="handleKeyDown(event)">
+            <button id="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+        const loadingSpinner = document.getElementById('loading-spinner');
+
+        // Text-to-speech using Web Speech API (browser-native)
+        let currentSpeech = null;
+
+        // Function to check if browser supports speech synthesis
+        function supportsSpeechSynthesis() {
+            return 'speechSynthesis' in window;
+        }
+
+        // Handles sending a user message
+        async function sendMessage() {
+            const userText = userInput.value.trim();
+            if (userText === '') return;
+
+            // Display user message
+            addMessageToChat(userText, 'user');
+            userInput.value = '';
+
+            loadingSpinner.classList.remove('hidden');
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                console.log('Sending user input to API:', userText);
+                
+                // Call the backend API endpoint
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: userText })
+                });
+                
+                console.log('API response status:', response.status);
+                const result = await response.json();
+                console.log('API response JSON:', result);
+
+                if (result.response) {
+                    addMessageToChat(result.response, 'bot');
+                } else if (result.error) {
+                    addMessageToChat("Error: " + result.error, 'bot');
+                } else {
+                    addMessageToChat("I'm sorry, I couldn't get a response. Please try again.", 'bot');
+                }
+            } catch (error) {
+                console.error('Error generating content:', error);
+                addMessageToChat("An error occurred while fetching the response. Please try again.", 'bot');
+            } finally {
+                loadingSpinner.classList.add('hidden');
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        // Adds a message bubble to the chat window
+        function addMessageToChat(text, sender) {
+            const messageContainer = document.createElement('div');
+            messageContainer.className = `message-container ${sender}`;
+
+            const messageBubble = document.createElement('div');
+            messageBubble.className = `message-bubble ${sender}`;
+            messageBubble.innerText = text;
+
+            messageContainer.appendChild(messageBubble);
+            chatBox.appendChild(messageContainer);
+
+            // Add Text-to-Speech button for bot messages
+            if (sender === 'bot') {
+                const audioControls = document.createElement('div');
+                audioControls.className = 'audio-controls';
+                const playButton = document.createElement('button');
+                playButton.innerHTML = '🔊';
+                playButton.onclick = () => playTTS(text, playButton);
+                audioControls.appendChild(playButton);
+                messageBubble.appendChild(audioControls);
+            }
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Handles the 'Enter' key press
+        function handleKeyDown(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Function to play text using Web Speech API (browser-native TTS)
+        function playTTS(text, buttonElement) {
+            // Check if browser supports speech synthesis
+            if (!supportsSpeechSynthesis()) {
+                console.error("Browser doesn't support speech synthesis");
+                if (buttonElement) {
+                    buttonElement.innerHTML = '❌';
+                    setTimeout(() => {
+                        buttonElement.innerHTML = '🔊';
+                    }, 2000);
+                }
+                return;
+            }
+
+            // Stop any currently playing speech
+            if (currentSpeech) {
+                window.speechSynthesis.cancel();
+                currentSpeech = null;
+            }
+
+            // Show loading state on button
+            if (buttonElement) {
+                buttonElement.classList.add('loading');
+                buttonElement.innerHTML = '';
+            }
+
+            // Create a new speech synthesis utterance
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // Set voice properties
+            utterance.lang = 'en-US';
+            utterance.rate = 1.0;  // Speed: 0.1 to 10
+            utterance.pitch = 1.0; // Pitch: 0 to 2
+            utterance.volume = 1.0; // Volume: 0 to 1
+
+            // Try to get a natural-sounding voice
+            const voices = window.speechSynthesis.getVoices();
+            const englishVoice = voices.find(voice => voice.lang.startsWith('en') && voice.name.includes('Female')) 
+                                || voices.find(voice => voice.lang.startsWith('en'));
+            if (englishVoice) {
+                utterance.voice = englishVoice;
+            }
+
+            // Handle speech start
+            utterance.onstart = () => {
+                if (buttonElement) {
+                    buttonElement.classList.remove('loading');
+                    buttonElement.innerHTML = '🔊';
+                }
+            };
+
+            // Handle speech end
+            utterance.onend = () => {
+                if (buttonElement) {
+                    buttonElement.classList.remove('loading');
+                    buttonElement.innerHTML = '🔊';
+                }
+                currentSpeech = null;
+            };
+
+            // Handle errors
+            utterance.onerror = (event) => {
+                console.error('Speech synthesis error:', event.error);
+                if (buttonElement) {
+                    buttonElement.classList.remove('loading');
+                    buttonElement.innerHTML = '❌';
+                    setTimeout(() => {
+                        buttonElement.innerHTML = '🔊';
+                    }, 2000);
+                }
+            };
+
+            // Store reference and start speaking
+            currentSpeech = utterance;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Load voices (needed for some browsers)
+        if (supportsSpeechSynthesis()) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                console.log('Voices loaded:', window.speechSynthesis.getVoices().length);
+            };
+        }
+    </script>
+</body>
+</html>

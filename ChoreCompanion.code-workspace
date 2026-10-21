@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../instance"
+		},
+		{
+			"path": "../models"
+		},
+		{
+			"path": "../uploads"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "ChoreCompanion"
+	}
+}

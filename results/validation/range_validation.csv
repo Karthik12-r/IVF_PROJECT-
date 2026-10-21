@@ -1,0 +1,14 @@
+Feature,Rule,Invalid Count,Invalid %,Status
+age,nonnegative,0,0.0,PASS
+bmi,nonnegative,0,0.0,PASS
+amh,nonnegative,0,0.0,PASS
+fsh,nonnegative,0,0.0,PASS
+previous_ivf,nonnegative,0,0.0,PASS
+stress,nonnegative,0,0.0,PASS
+sleep_hours,nonnegative,0,0.0,PASS
+exercise_min,nonnegative,0,0.0,PASS
+previous_ivf,integer count,0,0.0,PASS
+age,whole-year integer representation,0,0.0,PASS
+stress,generator's 1..5 integer coding,0,0.0,PASS
+exercise_min,whole-minute integer representation,0,0.0,PASS
+IVF_Success,binary 0/1,0,0.0,PASS

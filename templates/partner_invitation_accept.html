@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Accept Partner Invitation{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow border-0">
+                <div class="card-body p-5 text-center">
+                    <i class="fas fa-envelope-open-text fa-3x text-primary mb-3"></i>
+                    <h2 class="mb-3">Partner Invitation</h2>
+                    <p class="lead mb-4">{{ invitation.partner_name }} invited you to support their IVF journey.</p>
+                    <div class="alert alert-info text-start">
+                        <strong>Patient:</strong> {{ invitation.patient.first_name }} {{ invitation.patient.last_name }}<br>
+                        <strong>Relationship:</strong> {{ invitation.relationship }}<br>
+                        <strong>Expires:</strong> {{ invitation.expires_at.strftime('%d %b %Y') }}
+                    </div>
+                    <form method="POST">
+                        <input type="hidden" name="action" value="accept">
+                        <button type="submit" class="btn btn-success btn-lg me-2">
+                            <i class="fas fa-check me-2"></i>Accept Invitation
+                        </button>
+                    </form>
+                    <form method="POST" class="mt-3">
+                        <input type="hidden" name="action" value="decline">
+                        <button type="submit" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Decline
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

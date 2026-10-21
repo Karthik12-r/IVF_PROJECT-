@@ -1,0 +1,4 @@
+Check,Records Checked,Issues Found,Status
+Numeric values parse as numeric,5000,0,PASS
+Nonnegative values and documented integer/binary representations,5000,0,PASS
+Additional cross-field workflow rules,N/A,N/A,N/A — No additional cross-field consistency rules were applied because the current CSV does not contain sufficient documented workflow fields to justify them.

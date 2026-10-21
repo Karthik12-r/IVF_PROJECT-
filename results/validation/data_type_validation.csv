@@ -1,0 +1,10 @@
+Column,Expected Type,Actual Type,Invalid Count,Status
+age,numeric,int64,0,PASS
+bmi,numeric,float64,0,PASS
+amh,numeric,float64,0,PASS
+fsh,numeric,float64,0,PASS
+previous_ivf,numeric,int64,0,PASS
+stress,numeric,int64,0,PASS
+sleep_hours,numeric,float64,0,PASS
+exercise_min,numeric,int64,0,PASS
+IVF_Success,binary 0/1,int64,0,PASS

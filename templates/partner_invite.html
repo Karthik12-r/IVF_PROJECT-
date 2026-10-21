@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Connect Partner{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow border-0">
+                <div class="card-body p-5">
+                    <h2 class="mb-4"><i class="fas fa-user-plus me-2"></i>Connect Your Partner</h2>
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Partner Name</label>
+                            <input type="text" class="form-control" name="partner_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Partner Email</label>
+                            <input type="email" class="form-control" name="partner_email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number (Optional)</label>
+                            <input type="tel" class="form-control" name="phone">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Relationship</label>
+                            <select class="form-select" name="relationship">
+                                <option>Husband</option>
+                                <option>Wife</option>
+                                <option selected>Partner</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 btn-lg">Send Invitation</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

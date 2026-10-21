@@ -1,0 +1,994 @@
+{% extends "base.html" %}
+
+{% block title %}Wellness Tracking - IVF Journey Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header bg-gradient-success text-white rounded p-4">
+                <h1 class="mb-2">
+                    <i class="fas fa-leaf me-3"></i>Wellness & Mood Tracking
+                </h1>
+                <p class="mb-0 opacity-90">
+                    Track your daily wellness to optimize your IVF journey with comprehensive mood, stress, and sleep monitoring
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Wellness Form -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Today's Wellness Log
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <!-- Date Selection -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Date</label>
+                            <input type="date" class="form-control" name="date" value="{{ '' if not request.args.get('date') else request.args.get('date') }}" required>
+                        </div>
+
+                        <!-- Mood Tracking -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Mood Rating</label>
+                            <div class="mood-selector">
+                                <div class="d-flex justify-content-between mb-2">
+                                    {% for i in range(1, 6) %}
+                                        <label class="mood-option">
+                                            <input type="radio" name="mood_rating" value="{{ i }}" required>
+                                            <span class="mood-emoji" data-rating="{{ i }}">
+                                                {% if i == 1 %}😢
+                                                {% elif i == 2 %}😔
+                                                {% elif i == 3 %}😐
+                                                {% elif i == 4 %}😊
+                                                {% else %}😄
+                                                {% endif %}
+                                            </span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                                <small class="text-muted">1 = Very Low, 5 = Excellent</small>
+                            </div>
+                            <textarea class="form-control mt-2" name="mood_notes" placeholder="How are you feeling today? (optional)" rows="2"></textarea>
+                        </div>
+
+                        <!-- Stress Level -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Stress Level</label>
+                            <div class="stress-selector">
+                                <input type="range" class="form-range" name="stress_level" min="1" max="5" value="3" id="stressRange">
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-success">Low</small>
+                                    <small class="fw-bold text-warning" id="stressValue">3</small>
+                                    <small class="text-danger">High</small>
+                                </div>
+                            </div>
+                            <textarea class="form-control mt-2" name="stress_factors" placeholder="What's causing stress today? (optional)" rows="2"></textarea>
+                        </div>
+
+                        <!-- Sleep Tracking -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="fas fa-moon text-info me-2"></i>Sleep</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="form-label">Hours Slept</label>
+                                    <input type="number" class="form-control" name="sleep_hours" step="0.5" min="0" max="12" placeholder="7.5">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">Sleep Quality</label>
+                                    <select class="form-select" name="sleep_quality">
+                                        <option value="">Select</option>
+                                        <option value="1">Very Poor</option>
+                                        <option value="2">Poor</option>
+                                        <option value="3">Fair</option>
+                                        <option value="4">Good</option>
+                                        <option value="5">Excellent</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <textarea class="form-control mt-2" name="sleep_notes" placeholder="Sleep notes (optional)" rows="2"></textarea>
+                        </div>
+
+                        <!-- Physical Symptoms -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="fas fa-heartbeat text-danger me-2"></i>Physical Symptoms</label>
+                            <div class="symptom-checkboxes mb-2">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="fatigue" id="fatigue" name="symptom_fatigue">
+                                            <label class="form-check-label" for="fatigue">Fatigue</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="nausea" id="nausea" name="symptom_nausea">
+                                            <label class="form-check-label" for="nausea">Nausea</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="bloating" id="bloating" name="symptom_bloating">
+                                            <label class="form-check-label" for="bloating">Bloating</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="headache" id="headache" name="symptom_headache">
+                                            <label class="form-check-label" for="headache">Headache</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="cramps" id="cramps" name="symptom_cramps">
+                                            <label class="form-check-label" for="cramps">Cramps</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="hot_flashes" id="hot_flashes" name="symptom_hot_flashes">
+                                            <label class="form-check-label" for="hot_flashes">Hot Flashes</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <textarea class="form-control" name="symptoms" placeholder="Other symptoms or notes" rows="2"></textarea>
+                        </div>
+
+                        <!-- Energy Level -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="fas fa-bolt text-warning me-2"></i>Energy Level</label>
+                            <input type="range" class="form-range" name="energy_level" min="1" max="5" value="3" id="energyRange">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">Very Low</small>
+                                <small class="fw-bold text-success" id="energyValue">3</small>
+                                <small class="text-muted">Very High</small>
+                            </div>
+                        </div>
+
+                        <!-- Activities -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="fas fa-running text-info me-2"></i>Activities Today</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="form-label">Exercise (min)</label>
+                                    <input type="number" class="form-control" name="exercise_minutes" min="0" placeholder="30">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">Meditation (min)</label>
+                                    <input type="number" class="form-control" name="meditation_minutes" min="0" placeholder="10">
+                                </div>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" name="yoga_practiced" id="yoga_practiced" value="true">
+                                <label class="form-check-label" for="yoga_practiced">
+                                    <i class="fas fa-spa text-purple me-1"></i>I practiced yoga today
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Nutrition -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold"><i class="fas fa-apple-alt text-success me-2"></i>Nutrition & Hydration</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="form-label">Water Intake (glasses)</label>
+                                    <input type="number" class="form-control" name="water_intake" min="0" max="15" placeholder="8">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">Nutrition Score</label>
+                                    <select class="form-select" name="nutrition_score">
+                                        <option value="">Rate today</option>
+                                        <option value="1">Poor</option>
+                                        <option value="2">Below Average</option>
+                                        <option value="3">Average</option>
+                                        <option value="4">Good</option>
+                                        <option value="5">Excellent</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <textarea class="form-control mt-2" name="supplements_taken" placeholder="Supplements taken today" rows="2"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 btn-lg">
+                            <i class="fas fa-save me-2"></i>Save Today's Log
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts and Analytics -->
+        <div class="col-lg-8">
+            <!-- Wellness Overview Cards -->
+            <div class="row mb-4">
+                {% if recent_logs %}
+                    {% set latest = recent_logs[0] %}
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card bg-gradient-primary text-white">
+                            <div class="stat-icon">
+                                <i class="fas fa-smile"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>{{ latest.mood_rating or 'N/A' }}/5</h3>
+                                <p>Latest Mood</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card bg-gradient-warning text-white">
+                            <div class="stat-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>{{ latest.stress_level or 'N/A' }}/5</h3>
+                                <p>Stress Level</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card bg-gradient-info text-white">
+                            <div class="stat-icon">
+                                <i class="fas fa-moon"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>{{ latest.sleep_hours or 'N/A' }}h</h3>
+                                <p>Sleep Duration</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card bg-gradient-success text-white">
+                            <div class="stat-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>{{ latest.energy_level or 'N/A' }}/5</h3>
+                                <p>Energy Level</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Wellness Trends Chart -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line text-primary me-2"></i>Wellness Trends (Last 30 Days)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="wellnessTrendsChart" height="100"></canvas>
+                </div>
+            </div>
+
+            <!-- Sleep & Activity Analysis -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="fas fa-bed text-info me-2"></i>Sleep Analysis
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="sleepChart" height="180"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">
+                                <i class="fas fa-heart text-danger me-2"></i>Mood Distribution
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="moodChart" height="180"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity & Hydration Chart -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-glass-water text-info me-2"></i>Activity & Hydration Trends
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="activityChart" height="80"></canvas>
+                </div>
+            </div>
+
+            <!-- Wellness Radar -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie text-success me-2"></i>Overall Wellness Balance
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="wellnessRadar" height="150"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Wellness Logs -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history text-secondary me-2"></i>Recent Wellness Logs
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_logs %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Mood</th>
+                                        <th>Stress</th>
+                                        <th>Sleep</th>
+                                        <th>Energy</th>
+                                        <th>Activities</th>
+                                        <th>Hydration</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in recent_logs[:10] %}
+                                        <tr>
+                                            <td>{{ log.date.strftime('%m/%d/%Y') }}</td>
+                                            <td>
+                                                {% if log.mood_rating %}
+                                                    <span class="badge bg-primary">{{ log.mood_rating }}/5</span>
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if log.stress_level %}
+                                                    <span class="badge bg-{{ 'danger' if log.stress_level >= 4 else 'warning' if log.stress_level >= 3 else 'success' }}">
+                                                        {{ log.stress_level }}/5
+                                                    </span>
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if log.sleep_hours %}
+                                                    {{ log.sleep_hours }}h
+                                                    {% if log.sleep_quality %}
+                                                        <small class="text-muted">({{ log.sleep_quality }}/5)</small>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if log.energy_level %}
+                                                    <span class="badge bg-info">{{ log.energy_level }}/5</span>
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <small>
+                                                    {% if log.exercise_minutes %}
+                                                        <i class="fas fa-running text-success me-1"></i>{{ log.exercise_minutes }}min
+                                                    {% endif %}
+                                                    {% if log.yoga_practiced %}
+                                                        <i class="fas fa-spa text-info me-1"></i>Yoga
+                                                    {% endif %}
+                                                    {% if log.meditation_minutes %}
+                                                        <i class="fas fa-om text-purple me-1"></i>{{ log.meditation_minutes }}min
+                                                    {% endif %}
+                                                </small>
+                                            </td>
+                                            <td>
+                                                {% if log.water_intake %}
+                                                    <i class="fas fa-tint text-info me-1"></i>{{ log.water_intake }} glasses
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-leaf fa-3x mb-3 text-success"></i>
+                            <h5>No wellness logs yet</h5>
+                            <p>Start tracking your wellness today to see trends and insights.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Chart.js default configuration for better visuals
+Chart.defaults.font.family = "'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif";
+Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+Chart.defaults.plugins.tooltip.padding = 12;
+Chart.defaults.plugins.tooltip.cornerRadius = 8;
+
+// Update range input values
+document.getElementById('stressRange').addEventListener('input', function() {
+    document.getElementById('stressValue').textContent = this.value;
+    // Update color based on value
+    const value = parseInt(this.value);
+    const stressValue = document.getElementById('stressValue');
+    if (value <= 2) {
+        stressValue.className = 'fw-bold text-success';
+    } else if (value === 3) {
+        stressValue.className = 'fw-bold text-warning';
+    } else {
+        stressValue.className = 'fw-bold text-danger';
+    }
+});
+
+document.getElementById('energyRange').addEventListener('input', function() {
+    document.getElementById('energyValue').textContent = this.value;
+});
+
+// Collect symptom checkboxes
+document.querySelector('form').addEventListener('submit', function() {
+    const symptoms = [];
+    document.querySelectorAll('.symptom-checkboxes input:checked').forEach(checkbox => {
+        symptoms.push(checkbox.value);
+    });
+    
+    const existingSymptoms = document.querySelector('textarea[name="symptoms"]').value;
+    const allSymptoms = symptoms.length > 0 ? symptoms.join(', ') + (existingSymptoms ? '; ' + existingSymptoms : '') : existingSymptoms;
+    document.querySelector('textarea[name="symptoms"]').value = allSymptoms;
+});
+
+// Load wellness data and create charts
+fetch('/api/wellness_data')
+    .then(response => response.json())
+    .then(data => {
+        // ===== 1. Wellness Trends Chart (Enhanced with Gradient) =====
+        const trendsCtx = document.getElementById('wellnessTrendsChart').getContext('2d');
+        
+        // Create gradients
+        const moodGradient = trendsCtx.createLinearGradient(0, 0, 0, 300);
+        moodGradient.addColorStop(0, 'rgba(13, 110, 253, 0.3)');
+        moodGradient.addColorStop(1, 'rgba(13, 110, 253, 0.0)');
+        
+        const stressGradient = trendsCtx.createLinearGradient(0, 0, 0, 300);
+        stressGradient.addColorStop(0, 'rgba(255, 193, 7, 0.3)');
+        stressGradient.addColorStop(1, 'rgba(255, 193, 7, 0.0)');
+        
+        const energyGradient = trendsCtx.createLinearGradient(0, 0, 0, 300);
+        energyGradient.addColorStop(0, 'rgba(25, 135, 84, 0.3)');
+        energyGradient.addColorStop(1, 'rgba(25, 135, 84, 0.0)');
+
+        new Chart(trendsCtx, {
+            type: 'line',
+            data: {
+                labels: data.dates,
+                datasets: [{
+                    label: 'Mood',
+                    data: data.mood,
+                    borderColor: '#0d6efd',
+                    backgroundColor: moodGradient,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#0d6efd',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }, {
+                    label: 'Stress',
+                    data: data.stress,
+                    borderColor: '#ffc107',
+                    backgroundColor: stressGradient,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#ffc107',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }, {
+                    label: 'Energy',
+                    data: data.energy,
+                    borderColor: '#198754',
+                    backgroundColor: energyGradient,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#198754',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y + '/5';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 5,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            stepSize: 1
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== 2. Sleep Analysis Chart (Enhanced with dual bars) =====
+        const sleepCtx = document.getElementById('sleepChart').getContext('2d');
+        
+        // Sleep quality colors based on hours
+        const sleepColors = data.sleep_hours.slice(-7).map(hours => {
+            if (hours >= 7) return 'rgba(25, 135, 84, 0.8)'; // Good
+            if (hours >= 5) return 'rgba(255, 193, 7, 0.8)'; // Fair
+            return 'rgba(220, 53, 69, 0.8)'; // Poor
+        });
+
+        new Chart(sleepCtx, {
+            type: 'bar',
+            data: {
+                labels: data.dates.slice(-7).map(d => {
+                    const date = new Date(d);
+                    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                }),
+                datasets: [{
+                    label: 'Sleep Hours',
+                    data: data.sleep_hours.slice(-7),
+                    backgroundColor: sleepColors,
+                    borderColor: sleepColors.map(c => c.replace('0.8', '1')),
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    barThickness: 25
+                }, {
+                    label: 'Sleep Quality',
+                    data: data.sleep_quality.slice(-7),
+                    type: 'line',
+                    borderColor: '#0dcaf0',
+                    backgroundColor: 'transparent',
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#0dcaf0',
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 12,
+                        title: {
+                            display: true,
+                            text: 'Hours'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    y1: {
+                        beginAtZero: true,
+                        max: 5,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Quality'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== 3. Mood Distribution Chart (Enhanced Doughnut) =====
+        const moodCounts = [0, 0, 0, 0, 0];
+        data.mood.forEach(mood => {
+            if (mood > 0) moodCounts[mood - 1]++;
+        });
+
+        const moodCtx = document.getElementById('moodChart').getContext('2d');
+        new Chart(moodCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['😢 Very Low', '😔 Low', '😐 Neutral', '😊 Good', '😄 Excellent'],
+                datasets: [{
+                    data: moodCounts,
+                    backgroundColor: [
+                        'rgba(220, 53, 69, 0.85)',
+                        'rgba(253, 126, 20, 0.85)',
+                        'rgba(255, 193, 7, 0.85)',
+                        'rgba(32, 201, 151, 0.85)',
+                        'rgba(25, 135, 84, 0.85)'
+                    ],
+                    borderWidth: 3,
+                    borderColor: '#fff',
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '60%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true,
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== 4. Activity & Hydration Chart =====
+        const activityCtx = document.getElementById('activityChart').getContext('2d');
+        
+        new Chart(activityCtx, {
+            type: 'bar',
+            data: {
+                labels: data.dates.slice(-14).map(d => {
+                    const date = new Date(d);
+                    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                }),
+                datasets: [{
+                    label: 'Exercise (min)',
+                    data: data.exercise_minutes ? data.exercise_minutes.slice(-14) : new Array(14).fill(0),
+                    backgroundColor: 'rgba(13, 202, 240, 0.7)',
+                    borderColor: '#0dcaf0',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    yAxisID: 'y'
+                }, {
+                    label: 'Meditation (min)',
+                    data: data.meditation_minutes ? data.meditation_minutes.slice(-14) : new Array(14).fill(0),
+                    backgroundColor: 'rgba(156, 136, 255, 0.7)',
+                    borderColor: '#9c88ff',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    yAxisID: 'y'
+                }, {
+                    label: 'Water Intake (glasses)',
+                    data: data.water_intake ? data.water_intake.slice(-14) : new Array(14).fill(0),
+                    type: 'line',
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'transparent',
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#0d6efd',
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Minutes'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    y1: {
+                        beginAtZero: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Glasses'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== 5. Wellness Radar Chart =====
+        const radarCtx = document.getElementById('wellnessRadar').getContext('2d');
+        
+        // Calculate averages from data
+        const avgMood = data.mood.length > 0 ? data.mood.reduce((a, b) => a + b, 0) / data.mood.length : 0;
+        const avgStress = data.stress.length > 0 ? data.stress.reduce((a, b) => a + b, 0) / data.stress.length : 0;
+        const avgSleepHours = data.sleep_hours.length > 0 ? data.sleep_hours.reduce((a, b) => a + b, 0) / data.sleep_hours.length : 0;
+        const avgSleepQuality = data.sleep_quality.length > 0 ? data.sleep_quality.reduce((a, b) => a + b, 0) / data.sleep_quality.length : 0;
+        const avgEnergy = data.energy.length > 0 ? data.energy.reduce((a, b) => a + b, 0) / data.energy.length : 0;
+        
+        // Normalize sleep hours to 0-5 scale (assuming 8 hours = 5)
+        const normalizedSleepHours = Math.min(5, (avgSleepHours / 8) * 5);
+        
+        // Invert stress (lower is better for visualization)
+        const invertedStress = 6 - avgStress;
+
+        new Chart(radarCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Mood', 'Stress (Inverted)', 'Sleep Duration', 'Sleep Quality', 'Energy Level'],
+                datasets: [{
+                    label: 'Your Wellness',
+                    data: [
+                        avgMood || 0,
+                        invertedStress || 0,
+                        normalizedSleepHours || 0,
+                        avgSleepQuality || 0,
+                        avgEnergy || 0
+                    ],
+                    backgroundColor: 'rgba(25, 135, 84, 0.3)',
+                    borderColor: '#198754',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#198754',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }, {
+                    label: 'Ideal Wellness',
+                    data: [5, 5, 5, 5, 5],
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    borderColor: '#0d6efd',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#0d6efd',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true
+                        }
+                    }
+                },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 5,
+                        ticks: {
+                            stepSize: 1
+                        },
+                        pointLabels: {
+                            font: {
+                                size: 12
+                            }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        }
+                    }
+                }
+            }
+        });
+    })
+    .catch(error => {
+        console.error('Error loading wellness data:', error);
+    });
+</script>
+
+<style>
+.mood-selector {
+    text-align: center;
+}
+
+.mood-option {
+    cursor: pointer;
+    position: relative;
+}
+
+.mood-option input {
+    display: none;
+}
+
+.mood-emoji {
+    font-size: 2rem;
+    transition: transform 0.2s;
+    display: block;
+    padding: 5px;
+    border-radius: 50%;
+}
+
+.mood-option:hover .mood-emoji {
+    transform: scale(1.2);
+}
+
+.mood-option input:checked + .mood-emoji {
+    background-color: #e3f2fd;
+    border: 2px solid #2196f3;
+}
+
+.symptom-checkboxes .form-check {
+    margin-bottom: 0.25rem;
+}
+
+.stat-card {
+    border-radius: 15px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    margin-right: 1rem;
+    opacity: 0.9;
+}
+
+.stat-content h3 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.stat-content p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 0.9rem;
+}
+
+/* Gradient backgrounds for stat cards */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.bg-gradient-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.bg-gradient-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* Purple color for yoga/meditation */
+.text-purple {
+    color: #9c88ff !important;
+}
+
+/* Card shadow improvements */
+.card {
+    border: none;
+    border-radius: 12px;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    border-radius: 12px 12px 0 0 !important;
+}
+
+/* Table improvements */
+.table th {
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Form improvements */
+.form-control:focus, .form-select:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.15);
+}
+
+/* Button improvements */
+.btn-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #0d8050 0%, #2eb860 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);
+}
+
+/* Range input styling */
+.form-range::-webkit-slider-thumb {
+    background: #198754;
+}
+
+.form-range::-moz-range-thumb {
+    background: #198754;
+}
+
+/* Page header gradient */
+.bg-gradient-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}My Documents - IVF Journey Tracker{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="fas fa-file-medical-alt me-2 text-primary"></i>My Documents</h1>
+                <a href="{{ url_for('patient_dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                </a>
+            </div>
+
+            <!-- Upload Document Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-upload me-2"></i>Upload New Document</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('upload_document') }}" method="post" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="file" class="form-label">Select Document</label>
+                                <input type="file" class="form-control" id="file" name="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt" required>
+                                <div class="form-text">Supported formats: PDF, DOC, DOCX, JPG, PNG, TXT (Max 16MB)</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="description" class="form-label">Description (Optional)</label>
+                                <input type="text" class="form-control" id="description" name="description" placeholder="e.g., Blood test results, Ultrasound report">
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-upload me-2"></i>Upload Document
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- AI-Extracted Medical Summary Panel -->
+            {% if extracted_medical %}
+            <div class="card mb-4 border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-robot me-2"></i>AI-Extracted Medical Summary</h5>
+                </div>
+                <div class="card-body">
+                    {% if auto_saved %}
+                    <div class="alert alert-info mb-3">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <strong>Auto-saved!</strong> Extracted medical values have been added to your profile.
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-3">Extracted Parameters</h6>
+                            <table class="table table-sm">
+                                <tbody>
+                                    {% if extracted_medical.age %}
+                                    <tr><td><strong>Age:</strong></td><td>{{ extracted_medical.age }} years</td></tr>
+                                    {% endif %}
+                                    {% if extracted_medical.amh %}
+                                    <tr><td><strong>AMH:</strong></td><td>{{ extracted_medical.amh }} ng/mL</td></tr>
+                                    {% endif %}
+                                    {% if extracted_medical.fsh %}
+                                    <tr><td><strong>FSH:</strong></td><td>{{ extracted_medical.fsh }} mIU/mL</td></tr>
+                                    {% endif %}
+                                    {% if extracted_medical.lh %}
+                                    <tr><td><strong>LH:</strong></td><td>{{ extracted_medical.lh }} mIU/mL</td></tr>
+                                    {% endif %}
+                                    {% if extracted_medical.afc %}
+                                    <tr><td><strong>AFC:</strong></td><td>{{ extracted_medical.afc }}</td></tr>
+                                    {% endif %}
+                                    {% if extracted_medical.uterus %}
+                                    <tr><td><strong>Uterus:</strong></td><td>{{ extracted_medical.uterus }}</td></tr>
+                                    {% endif %}
+                                    {% if extracted_medical.ovaries %}
+                                    <tr><td><strong>Ovaries:</strong></td><td>{{ extracted_medical.ovaries }}</td></tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            {% if medical_insights %}
+                            <h6 class="text-muted mb-3">System Insights</h6>
+                            <ul class="list-group mb-3">
+                                {% for insight in medical_insights %}
+                                <li class="list-group-item"><i class="fas fa-lightbulb text-warning me-2"></i>{{ insight }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            
+                            {% if ai_prediction %}
+                            <div class="alert alert-success">
+                                <h6 class="alert-heading"><i class="fas fa-chart-line me-2"></i>AI Prediction</h6>
+                                <hr>
+                                <p class="mb-1"><strong>Predicted IVF Success:</strong> <span class="badge bg-success">{{ ai_prediction.success_probability }}%</span></p>
+                                <p class="mb-0"><strong>Prediction:</strong> {{ ai_prediction.prediction }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 pt-3 border-top">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            <strong>Note:</strong> This is an AI-assisted document analysis tool for academic research only. Always consult your healthcare provider.
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if documents %}
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Your Uploaded Documents</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th><i class="fas fa-file me-1"></i>Document Name</th>
+                                        <th><i class="fas fa-info-circle me-1"></i>Description</th>
+                                        <th><i class="fas fa-calendar me-1"></i>Upload Date</th>
+                                        <th><i class="fas fa-weight me-1"></i>Size</th>
+                                        <th><i class="fas fa-download me-1"></i>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for doc in documents %}
+                                        <tr>
+                                            <td>
+                                                <i class="fas fa-file-{{ 'pdf' if doc.file_type == 'application/pdf' else 'image' if doc.file_type.startswith('image/') else 'alt' }} me-2 text-muted"></i>
+                                                {{ doc.original_filename }}
+                                            </td>
+                                            <td>{{ doc.description or 'No description' }}</td>
+                                            <td>{{ doc.uploaded_at.strftime('%B %d, %Y at %I:%M %p') }}</td>
+                                            <td>
+                                                {% if doc.file_size %}
+                                                    {% if doc.file_size < 1024 %}
+                                                        {{ doc.file_size }} B
+                                                    {% elif doc.file_size < 1024*1024 %}
+                                                        {{ (doc.file_size / 1024)|round(1) }} KB
+                                                    {% else %}
+                                                        {{ (doc.file_size / (1024*1024))|round(1) }} MB
+                                                    {% endif %}
+                                                {% else %}
+                                                    Unknown
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ url_for('download_document', doc_id=doc.id) }}" class="btn btn-sm btn-primary">
+                                                        <i class="fas fa-download me-1"></i>Download
+                                                    </a>
+                                                    <a href="{{ url_for('analyze_document', doc_id=doc.id) }}" class="btn btn-sm btn-info">
+                                                        <i class="fas fa-search me-1"></i>Analyze
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-file-medical-alt fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Documents Yet</h4>
+                    <p class="text-muted">You haven't uploaded any medical documents yet. Use the form above to upload your first document.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Business Model - IVF Journey Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-5 text-success"><i class="fas fa-briefcase me-2"></i>Business Model & Pricing</h1>
+
+    <div class="row">
+        <!-- Free Tier -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 border-primary">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3>Basic Plan</h3>
+                    <h4 class="mb-0">Free</h4>
+                    <small>For Patients</small>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i>Cycle Tracking</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i>Basic Wellness Log</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i>Community Forum Access</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i>Standard AI Chatbot</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i>Medication Reminders</li>
+                    </ul>
+                </div>
+                <div class="card-footer text-center bg-white">
+                    <a href="{{ url_for('register') }}" class="btn btn-outline-primary">Get Started</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Premium Tier -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 border-success shadow">
+                <div class="card-header bg-success text-white text-center py-4">
+                    <h3>Premium Care</h3>
+                    <h4 class="mb-0">$15 / month</h4>
+                    <small>or Clinic Partnership</small>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><i class="fas fa-star text-warning me-2"></i><strong>AI Success Prediction Engine</strong></li>
+                        <li class="list-group-item"><i class="fas fa-star text-warning me-2"></i><strong>Smart Document Analysis (OCR)</strong></li>
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i>Personalized Nutrition & Yoga Plans</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i>Direct Doctor Messaging</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i>Advanced Analytics & Reports</li>
+                        <li class="list-group-item"><i class="fas fa-check text-success me-2"></i>Priority Support</li>
+                    </ul>
+                </div>
+                <div class="card-footer text-center bg-white">
+                    <button class="btn btn-success">Contact Sales</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <h4>B2B Partnership Model</h4>
+            <p class="lead text-muted">We partner with IVF Clinics to provide white-labeled solutions for their patients.</p>
+            <p>Clinics pay a subscription fee based on patient volume, unlocking full premium features for all their registered patients.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

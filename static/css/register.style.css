@@ -1,0 +1,94 @@
+/* ===========================
+   REGISTER PAGE STYLES
+   =========================== */
+
+body {
+  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+  min-height: 100vh;
+}
+
+.card {
+  border-radius: 1rem;
+  border: none;
+}
+
+.card-body {
+  padding: 3rem;
+}
+
+h2 {
+  font-weight: 700;
+  color: #333;
+}
+
+.form-label {
+  font-weight: 600;
+}
+
+.form-control {
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid #ced4da;
+  transition: 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #2575fc;
+  box-shadow: 0 0 0 0.2rem rgba(37, 117, 252, 0.25);
+}
+
+.btn {
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #2575fc, #6a11cb);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+}
+
+.btn-success {
+  background: linear-gradient(90deg, #00b09b, #96c93d);
+  border: none;
+}
+
+.btn-success:hover {
+  background: linear-gradient(90deg, #96c93d, #00b09b);
+}
+
+/* Checkbox */
+.form-check-label {
+  color: #555;
+}
+
+.form-check-input:checked {
+  background-color: #2575fc;
+  border-color: #2575fc;
+}
+
+/* Small text links */
+a.text-decoration-none {
+  color: #2575fc;
+}
+
+a.text-decoration-none:hover {
+  text-decoration: underline;
+}
+
+/* Password validation message */
+.form-text {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1.5rem;
+  }
+}

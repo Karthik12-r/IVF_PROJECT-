@@ -1,0 +1,475 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhseINkfSgoIHPqNkRHE2pRESqmAudayI1AI=" crossorigin=""/>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.style.css') }}">
+{% endblock %}
+
+{% block title %}Update Profile - IVF Journey Tracker{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header bg-gradient-primary text-white rounded p-4">
+                <h1 class="mb-2">
+                    <i class="fas fa-user-edit me-3"></i>Update Medical Profile
+                </h1>
+                <p class="mb-0 opacity-90">
+                    Complete your medical information for accurate AI predictions and personalized recommendations
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST">
+        <div class="row">
+            <!-- Personal Information -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-user me-2"></i>Personal Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="first_name" class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" 
+                                       value="{{ user.first_name }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="last_name" class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" 
+                                       value="{{ user.last_name }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" 
+                                       value="{{ user.phone or '' }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="date_of_birth" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" 
+                                       value="{{ user.date_of_birth.strftime('%Y-%m-%d') if user.date_of_birth else '' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="age" class="form-label">Current Age *</label>
+                            <input type="number" class="form-control" id="age" name="age" min="18" max="55"
+                                   value="{{ patient_data.age or '' }}" required>
+                            <div class="form-text">Age is crucial for accurate success predictions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Physical Measurements -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-weight me-2"></i>Physical Measurements
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="height" class="form-label">Height (cm) *</label>
+                                <input type="number" class="form-control" id="height" name="height" 
+                                       value="{{ patient_data.height or '' }}" step="0.1" min="120" max="220">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="weight" class="form-label">Weight (kg) *</label>
+                                <input type="number" class="form-control" id="weight" name="weight" 
+                                       value="{{ patient_data.weight or '' }}" step="0.1" min="30" max="200">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">BMI</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="bmi" readonly>
+                                <span class="input-group-text" id="bmiCategory"></span>
+                            </div>
+                            <div class="form-text">BMI is automatically calculated from height and weight</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Hormone Levels -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-vial me-2"></i>Hormone Levels
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="amh_level" class="form-label">AMH Level (ng/mL)</label>
+                            <input type="number" class="form-control" id="amh_level" name="amh_level" 
+                                   value="{{ patient_data.amh_level or '' }}" step="0.1" min="0" max="20">
+                            <div class="form-text">Anti-Müllerian Hormone - indicates ovarian reserve</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="fsh_level" class="form-label">FSH Level (mIU/mL)</label>
+                            <input type="number" class="form-control" id="fsh_level" name="fsh_level" 
+                                   value="{{ patient_data.fsh_level or '' }}" step="0.1" min="0" max="50">
+                            <div class="form-text">Follicle Stimulating Hormone - Day 3 of cycle</div>
+                        </div>
+                        
+                        <div class="hormone-interpretation" id="hormoneInterpretation">
+                            <!-- Dynamic hormone level interpretation will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medical History -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-notes-medical me-2"></i>Medical History
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="diagnosis" class="form-label">Primary Diagnosis</label>
+                            <select class="form-select" id="diagnosis" name="diagnosis">
+                                <option value="">Select diagnosis</option>
+                                <option value="male_factor" {{ 'selected' if patient_data.diagnosis == 'male_factor' else '' }}>Male Factor Infertility</option>
+                                <option value="ovulation_disorders" {{ 'selected' if patient_data.diagnosis == 'ovulation_disorders' else '' }}>Ovulation Disorders</option>
+                                <option value="tubal_factor" {{ 'selected' if patient_data.diagnosis == 'tubal_factor' else '' }}>Tubal Factor</option>
+                                <option value="endometriosis" {{ 'selected' if patient_data.diagnosis == 'endometriosis' else '' }}>Endometriosis</option>
+                                <option value="unexplained" {{ 'selected' if patient_data.diagnosis == 'unexplained' else '' }}>Unexplained Infertility</option>
+                                <option value="pcos" {{ 'selected' if patient_data.diagnosis == 'pcos' else '' }}>PCOS</option>
+                                <option value="diminished_ovarian_reserve" {{ 'selected' if patient_data.diagnosis == 'diminished_ovarian_reserve' else '' }}>Diminished Ovarian Reserve</option>
+                                <option value="other" {{ 'selected' if patient_data.diagnosis == 'other' else '' }}>Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="previous_pregnancies" class="form-label">Previous Pregnancies</label>
+                                <input type="number" class="form-control" id="previous_pregnancies" name="previous_pregnancies" 
+                                       value="{{ patient_data.previous_pregnancies or 0 }}" min="0" max="10">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="previous_ivf_cycles" class="form-label">Previous IVF Cycles</label>
+                                <input type="number" class="form-control" id="previous_ivf_cycles" name="previous_ivf_cycles" 
+                                       value="{{ patient_data.previous_ivf_cycles or 0 }}" min="0" max="10">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="medical_history" class="form-label">Medical History</label>
+                            <textarea class="form-control" id="medical_history" name="medical_history" rows="3"
+                                      placeholder="Any relevant medical conditions, surgeries, or treatments">{{ patient_data.medical_history or '' }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="medications" class="form-label">Current Medications</label>
+                            <textarea class="form-control" id="medications" name="medications" rows="3"
+                                      placeholder="List all current medications and supplements">{{ patient_data.medications or '' }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="allergies" class="form-label">Allergies</label>
+                            <textarea class="form-control" id="allergies" name="allergies" rows="2"
+                                      placeholder="List any known allergies">{{ patient_data.allergies or '' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Partner Information -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-heart me-2"></i>Partner Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="partner_age" class="form-label">Partner's Age</label>
+                            <input type="number" class="form-control" id="partner_age" name="partner_age" 
+                                   value="{{ patient_data.partner_age or '' }}" min="18" max="80">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="partner_diagnosis" class="form-label">Partner's Diagnosis (if any)</label>
+                            <textarea class="form-control" id="partner_diagnosis" name="partner_diagnosis" rows="3"
+                                      placeholder="Any male factor issues or relevant medical history">{{ patient_data.partner_diagnosis or '' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lifestyle Factors -->
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-leaf me-2"></i>Lifestyle Factors
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Smoking Status</label>
+                            <div class="smoking-options">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="smoking" id="non_smoker" value="non-smoker">
+                                    <label class="form-check-label" for="non_smoker">Non-smoker</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="smoking" id="former_smoker" value="former-smoker">
+                                    <label class="form-check-label" for="former_smoker">Former smoker</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="smoking" id="current_smoker" value="current-smoker">
+                                    <label class="form-check-label" for="current_smoker">Current smoker</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Exercise Level</label>
+                            <select class="form-select" id="exercise_level" name="exercise_level">
+                                <option value="">Select exercise level</option>
+                                <option value="sedentary">Sedentary (little to no exercise)</option>
+                                <option value="light">Light (1-3 days/week)</option>
+                                <option value="moderate">Moderate (3-5 days/week)</option>
+                                <option value="active">Active (6-7 days/week)</option>
+                                <option value="very_active">Very Active (intense daily exercise)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="lifestyle_factors" class="form-label">Additional Lifestyle Notes</label>
+                            <textarea class="form-control" id="lifestyle_factors" name="lifestyle_factors" rows="4"
+                                      placeholder="Include information about stress levels, sleep patterns, diet, alcohol consumption, etc.">{{ patient_data.lifestyle_factors or '' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <h6 class="text-muted">Profile Completion</h6>
+                            <div class="progress mb-2">
+                                <div class="progress-bar" id="completionProgress" style="width: 0%"></div>
+                            </div>
+                            <small class="text-muted">Complete your profile for better AI predictions</small>
+                        </div>
+                        
+                        <div class="d-flex justify-content-center gap-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Save Profile
+                            </button>
+                            <a href="{{ url_for('patient_dashboard') }}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Calculate BMI automatically
+function calculateBMI() {
+    const height = parseFloat(document.getElementById('height').value);
+    const weight = parseFloat(document.getElementById('weight').value);
+    
+    if (height && weight) {
+        const heightInMeters = height / 100;
+        const bmi = weight / (heightInMeters * heightInMeters);
+        
+        document.getElementById('bmi').value = bmi.toFixed(1);
+        
+        // Update BMI category
+        let category = '';
+        let categoryClass = '';
+        
+        if (bmi < 18.5) {
+            category = 'Underweight';
+            categoryClass = 'text-warning';
+        } else if (bmi < 25) {
+            category = 'Normal';
+            categoryClass = 'text-success';
+        } else if (bmi < 30) {
+            category = 'Overweight';
+            categoryClass = 'text-warning';
+        } else {
+            category = 'Obese';
+            categoryClass = 'text-danger';
+        }
+        
+        const categoryElement = document.getElementById('bmiCategory');
+        categoryElement.textContent = category;
+        categoryElement.className = `input-group-text ${categoryClass}`;
+    }
+}
+
+// Add event listeners for BMI calculation
+document.getElementById('height').addEventListener('input', calculateBMI);
+document.getElementById('weight').addEventListener('input', calculateBMI);
+
+// Initial BMI calculation if values exist
+calculateBMI();
+
+// Hormone level interpretation
+function interpretHormonelevels() {
+    const amh = parseFloat(document.getElementById('amh_level').value);
+    const fsh = parseFloat(document.getElementById('fsh_level').value);
+    
+    let interpretation = '';
+    
+    if (amh || fsh) {
+        interpretation += '<div class="alert alert-info"><h6>Hormone Level Interpretation:</h6><ul class="mb-0">';
+        
+        if (amh) {
+            if (amh >= 2.0) {
+                interpretation += '<li class="text-success">AMH: Good ovarian reserve</li>';
+            } else if (amh >= 1.0) {
+                interpretation += '<li class="text-warning">AMH: Adequate ovarian reserve</li>';
+            } else {
+                interpretation += '<li class="text-danger">AMH: Low ovarian reserve - discuss with doctor</li>';
+            }
+        }
+        
+        if (fsh) {
+            if (fsh <= 10) {
+                interpretation += '<li class="text-success">FSH: Normal level</li>';
+            } else if (fsh <= 15) {
+                interpretation += '<li class="text-warning">FSH: Borderline elevated</li>';
+            } else {
+                interpretation += '<li class="text-danger">FSH: Elevated - discuss with doctor</li>';
+            }
+        }
+        
+        interpretation += '</ul></div>';
+    }
+    
+    document.getElementById('hormoneInterpretation').innerHTML = interpretation;
+}
+
+// Add event listeners for hormone interpretation
+document.getElementById('amh_level').addEventListener('input', interpretHormonelevels);
+document.getElementById('fsh_level').addEventListener('input', interpretHormonelevels);
+
+// Initial interpretation if values exist
+interpretHormonelevels();
+
+// Profile completion calculation
+function calculateCompletion() {
+    const fields = [
+        'age', 'height', 'weight', 'amh_level', 'fsh_level', 
+        'diagnosis', 'medical_history', 'lifestyle_factors'
+    ];
+    
+    let completed = 0;
+    fields.forEach(field => {
+        const element = document.getElementById(field);
+        if (element && element.value.trim()) {
+            completed++;
+        }
+    });
+    
+    const percentage = (completed / fields.length) * 100;
+    document.getElementById('completionProgress').style.width = percentage + '%';
+    
+    if (percentage < 50) {
+        document.getElementById('completionProgress').className = 'progress-bar bg-danger';
+    } else if (percentage < 80) {
+        document.getElementById('completionProgress').className = 'progress-bar bg-warning';
+    } else {
+        document.getElementById('completionProgress').className = 'progress-bar bg-success';
+    }
+}
+
+// Calculate completion on page load and input changes
+calculateCompletion();
+
+// Add event listeners to all form fields
+document.querySelectorAll('input, select, textarea').forEach(element => {
+    element.addEventListener('change', calculateCompletion);
+    element.addEventListener('input', calculateCompletion);
+});
+
+// Set lifestyle factors based on selections
+document.querySelectorAll('input[name="smoking"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        updateLifestyleFactors();
+    });
+});
+
+document.getElementById('exercise_level').addEventListener('change', updateLifestyleFactors);
+
+function updateLifestyleFactors() {
+    const smoking = document.querySelector('input[name="smoking"]:checked');
+    const exercise = document.getElementById('exercise_level');
+    const lifestyleText = document.getElementById('lifestyle_factors');
+    
+    let currentText = lifestyleText.value;
+    
+    // Update smoking status
+    if (smoking) {
+        const smokingText = `Smoking status: ${smoking.value.replace('-', ' ')}`;
+        if (!currentText.includes('Smoking status:')) {
+            currentText = smokingText + '\n' + currentText;
+        } else {
+            currentText = currentText.replace(/Smoking status:.*$/m, smokingText);
+        }
+    }
+    
+    // Update exercise level
+    if (exercise.value) {
+        const exerciseText = `Exercise level: ${exercise.value.replace('_', ' ')}`;
+        if (!currentText.includes('Exercise level:')) {
+            currentText = currentText + '\n' + exerciseText;
+        } else {
+            currentText = currentText.replace(/Exercise level:.*$/m, exerciseText);
+        }
+    }
+    
+    lifestyleText.value = currentText.trim();
+}
+</script>
+{% endblock %}

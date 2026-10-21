@@ -1,0 +1,10 @@
+Column,Total,Missing,Missing %,Status
+age,5000,0,0.0,PASS
+bmi,5000,0,0.0,PASS
+amh,5000,0,0.0,PASS
+fsh,5000,0,0.0,PASS
+previous_ivf,5000,0,0.0,PASS
+stress,5000,0,0.0,PASS
+sleep_hours,5000,0,0.0,PASS
+exercise_min,5000,0,0.0,PASS
+IVF_Success,5000,0,0.0,PASS

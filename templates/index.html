@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhseINkfSgoIHPqNkRHE2pRESqmAudayI1AI=" crossorigin=""/>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.style.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="hero-section bg-gradient-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Your IVF Journey, Powered by AI</h1>
+                <p class="lead mb-4">
+                    Track your fertility treatment with revolutionary AI insights, personalized predictions, 
+                    and comprehensive wellness monitoring designed specifically for IVF patients.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('login', type='patient') }}" class="btn btn-light btn-lg">
+                        <i class="fas fa-user-injured me-2"></i>Patient Login
+                    </a>
+                    <a href="{{ url_for('login', type='doctor') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-user-md me-2"></i>Doctor Login
+                    </a>
+                    <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Register
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="hero-image">
+                    <i class="fas fa-heartbeat hero-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-5 fw-bold">Revolutionary IVF Tracking Features</h2>
+                <p class="lead text-muted">
+                    First-ever patient application with cutting-edge AI features based on 2024-2025 clinical research
+                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <!-- AI Chatbot -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon bg-primary">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h4>24/7 AI Assistant</h4>
+                    <p>Get instant answers to your IVF questions with our specialized AI chatbot trained on fertility medicine.</p>
+                </div>
+            </div>
+            
+            <!-- Embryo Quality Predictor -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon bg-success">
+                        <i class="fas fa-microscope"></i>
+                    </div>
+                    <h4>AI Embryo Quality Predictor</h4>
+                    <p><span class="badge bg-warning text-dark">NEW!</span> Revolutionary feature that predicts embryo quality and implantation potential using AI.</p>
+                </div>
+            </div>
+            
+            <!-- Success Prediction -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon bg-info">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4>Success Prediction</h4>
+                    <p>Get personalized IVF success rates based on your medical history and current health status.</p>
+                </div>
+            </div>
+            
+            <!-- Personalized Protocols -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon bg-warning">
+                        <i class="fas fa-pills"></i>
+                    </div>
+                    <h4>AI Protocol Advisor</h4>
+                    <p><span class="badge bg-warning text-dark">NEW!</span> Personalized treatment protocol recommendations optimized for your unique profile.</p>
+                </div>
+            </div>
+            
+            <!-- Wellness Tracking -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon bg-purple">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h4>Comprehensive Wellness</h4>
+                    <p>Track mood, stress, sleep, and symptoms with visual analytics to optimize your treatment journey.</p>
+                </div>
+            </div>
+            
+            <!-- Nutrition & Yoga -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon bg-teal">
+                        <i class="fas fa-spa"></i>
+                    </div>
+                    <h4>AI Nutrition & Yoga</h4>
+                    <p>Get personalized meal plans and gentle yoga routines specifically designed for IVF patients.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stat-card bg-gradient-primary">
+                    <div class="stat-icon"><i class="fas fa-bullseye"></i></div>
+                    <div class="stat-content">
+                        <h3>95%</h3>
+                        <p>Prediction Accuracy</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stat-card bg-gradient-success">
+                    <div class="stat-icon"><i class="fas fa-headset"></i></div>
+                    <div class="stat-content">
+                        <h3>24/7</h3>
+                        <p>AI Support</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stat-card bg-gradient-info">
+                    <div class="stat-icon"><i class="fas fa-brain"></i></div>
+                    <div class="stat-content">
+                        <h3>2025</h3>
+                        <p>Latest AI Models</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stat-card bg-gradient-warning">
+                    <div class="stat-icon"><i class="fas fa-heartbeat"></i></div>
+                    <div class="stat-content">
+                        <h3>100+</h3>
+                        <p>Wellness Metrics</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">How It Works</h2>
+            <p class="lead text-muted">Simple steps to start your AI-powered IVF journey</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-3 col-md-6 text-center mb-4">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h5>Register</h5>
+                    <p>Create your account and complete your medical profile</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center mb-4">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h5>Track</h5>
+                    <p>Log your symptoms, medications, and wellness activities</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center mb-4">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h5>Predict</h5>
+                    <p>Get AI-powered predictions and personalized recommendations</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center mb-4">
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h5>Succeed</h5>
+                    <p>Optimize your treatment with AI insights and 24/7 support</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">Ready to Start Your Journey?</h2>
+        <p class="lead mb-4">
+            Join thousands of patients using AI to optimize their IVF success
+        </p>
+        <a href="{{ url_for('register') }}" class="btn btn-light btn-lg">
+            <i class="fas fa-rocket me-2"></i>Start Free Today
+        </a>
+    </div>
+</section>
+{% endblock %}
